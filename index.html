@@ -6,17 +6,21 @@
 <title>Vintage Postcard Maker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Oswald:wght@500;600;700&family=Anton&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Playfair+Display:ital,wght@1,700;1,800;1,900&family=Homemade+Apple&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
   :root {
+    --paper: #e6d8bd;      /* warm aged page */
+    --mat: #f6eedb;        /* cream/ivory photo mat */
     --cream: #f3e9d2;
     --cream-deep: #e7d8b5;
-    --navy: #1f3a5f;
-    --navy-ink: #25406b;
-    --par-red: #c8102e;
+    --ink: #4a3520;        /* faded sepia ink — never black */
+    --ink-soft: #6b5234;
+    --oxblood: #9c5446;    /* faded Share */
+    --inkteal: #4a6c66;    /* muted Download */
+    --par-red: #c8102e;    /* survives only in PAR AVION stripe */
     --par-blue: #14366b;
-    --shadow: rgba(60, 40, 20, 0.35);
+    --shadow: rgba(74, 53, 32, 0.32);
   }
 
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -24,10 +28,14 @@
   html, body {
     margin: 0;
     padding: 0;
-    background:
-      radial-gradient(circle at 30% 10%, #6a7c6d 0%, #4a5a52 55%, #38453f 100%);
-    font-family: 'Oswald', system-ui, sans-serif;
-    color: #2c2419;
+    background-color: var(--paper);
+    background-image:
+      radial-gradient(circle at 22% 18%, rgba(180,150,100,0.18), transparent 45%),
+      radial-gradient(circle at 80% 75%, rgba(150,118,72,0.16), transparent 50%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.22'/%3E%3C/svg%3E");
+    background-blend-mode: normal, normal, multiply;
+    font-family: 'Special Elite', system-ui, monospace;
+    color: var(--ink);
     min-height: 100%;
   }
 
@@ -40,22 +48,22 @@
   .title {
     text-align: center;
     margin: 6px 0 18px;
-    color: var(--cream);
+    color: var(--ink);
   }
   .title h1 {
-    font-family: 'Anton', sans-serif;
+    font-family: 'Special Elite', monospace;
     font-weight: 400;
-    letter-spacing: 2px;
-    font-size: 26px;
+    letter-spacing: 3px;
+    font-size: 24px;
     margin: 0;
     text-transform: uppercase;
-    text-shadow: 0 2px 0 rgba(0,0,0,0.25);
+    text-shadow: 0 1px 0 rgba(255,250,235,0.5);
   }
   .title p {
     font-family: 'Special Elite', monospace;
     font-size: 12px;
-    margin: 4px 0 0;
-    opacity: 0.85;
+    margin: 5px 0 0;
+    opacity: 0.7;
     letter-spacing: 1px;
   }
 
@@ -64,6 +72,13 @@
   .stage {
     perspective: 1600px;
     margin: 0 auto 14px;
+    /* cream/ivory mat, like a bordered photo print */
+    background: var(--mat);
+    padding: 16px 16px 30px;
+    border-radius: 2px;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,0.6) inset,
+      0 14px 26px var(--shadow);
   }
 
   /* Landscape postcard. Width-driven, fixed 3:2 ratio. */
@@ -74,7 +89,7 @@
     transform-style: preserve-3d;
     transition: transform 0.8s cubic-bezier(0.4, 0.1, 0.2, 1);
     cursor: pointer;
-    filter: drop-shadow(0 14px 22px var(--shadow));
+    filter: drop-shadow(0 6px 10px rgba(74,53,32,0.28));
   }
   .postcard.flipped { transform: rotateY(180deg); }
 
@@ -91,30 +106,31 @@
   /* ---------------- FRONT ---------------- */
 
   .front {
-    background: #2a2a2a;
+    /* warm, never a dark void */
+    background: #d8b88a;
   }
   .photo-layer {
     position: absolute;
     inset: 0;
     background-size: cover;
     background-position: center;
-    /* sun-faded treatment */
-    filter: sepia(0.45) saturate(0.8) contrast(0.95) brightness(1.04);
+    /* aged sepia treatment, applied to uploads and presets alike */
+    filter: sepia(0.55) saturate(0.78) contrast(0.93) brightness(1.05);
   }
-  /* warm colour overlay */
+  /* warm sepia colour overlay */
   .front .warm {
     position: absolute;
     inset: 0;
     background:
-      linear-gradient(120deg, rgba(255, 176, 92, 0.28), rgba(255, 120, 80, 0.12) 50%, rgba(120, 90, 180, 0.14));
+      linear-gradient(125deg, rgba(214, 158, 92, 0.32), rgba(196, 132, 78, 0.16) 55%, rgba(150, 104, 60, 0.22));
     mix-blend-mode: multiply;
     pointer-events: none;
   }
-  /* vignette */
+  /* soft warm vignette */
   .front .vignette {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 52%, rgba(40,24,8,0.5) 100%);
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(74, 48, 18, 0.42) 100%);
     pointer-events: none;
   }
   /* grain */
@@ -127,25 +143,31 @@
     mix-blend-mode: overlay;
   }
 
-  /* preset backdrops (pure CSS) */
+  /* preset backdrops (pure CSS) — warm & sun-bleached, never dark */
   .preset-sunset {
     background:
-      radial-gradient(circle at 50% 78%, #fff3b0 0%, #ffd36b 8%, #ff9e4f 20%, transparent 42%),
-      linear-gradient(180deg, #2c2a55 0%, #6b3d77 28%, #c85b7c 52%, #ff8a5b 74%, #ffd28a 100%);
+      radial-gradient(circle at 50% 80%, #fff0c4 0%, #f4cf86 9%, #e3a85e 22%, transparent 46%),
+      linear-gradient(180deg, #d9b483 0%, #d8a96c 30%, #cf945a 52%, #d8a263 60%, #e6c089 100%);
   }
   .preset-ocean {
     background:
-      linear-gradient(180deg, #7ec8e3 0%, #b6e3ef 30%, #e8f6f2 48%, #2bb0a8 52%, #0e7d8c 78%, #075b73 100%);
+      linear-gradient(180deg, #ddc190 0%, #d4b27d 34%, #c9a06a 49%, #b08a5a 52%, #9c7a4d 78%, #876840 100%);
   }
   .preset-sunset::after, .preset-ocean::after {
     content: "";
     position: absolute;
     inset: 0;
+    pointer-events: none;
+  }
+  /* faint horizon line so it reads as an old sun-bleached photo */
+  .preset-sunset::after {
+    background: linear-gradient(180deg, transparent 0 59.5%, rgba(120,86,46,0.35) 60%, transparent 60.5%);
   }
   .preset-ocean::after {
-    background:
-      repeating-linear-gradient(180deg, transparent 0 14px, rgba(255,255,255,0.06) 14px 15px);
     top: 52%;
+    background:
+      linear-gradient(180deg, rgba(120,86,46,0.3) 0 1.5px, transparent 1.5px),
+      repeating-linear-gradient(180deg, transparent 0 14px, rgba(255,248,230,0.07) 14px 15px);
   }
 
   .front-text {
@@ -157,35 +179,47 @@
     pointer-events: none;
   }
   .greeting {
-    font-family: 'Anton', sans-serif;
-    text-transform: uppercase;
-    color: #fff4dd;
-    font-size: clamp(20px, 7.6vw, 44px);
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    color: #f7ecd6;
+    font-size: clamp(26px, 9vw, 52px);
     line-height: 0.95;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     margin: 0;
     text-shadow:
-      0 2px 0 rgba(120, 50, 20, 0.55),
-      0 0 18px rgba(255, 200, 120, 0.35);
+      0 1px 0 rgba(74, 40, 14, 0.7),
+      0 2px 6px rgba(54, 32, 12, 0.55),
+      0 0 16px rgba(120, 78, 36, 0.3);
+    -webkit-text-stroke: 0.6px rgba(60, 36, 14, 0.55);
     /* distressed / faded */
-    opacity: 0.94;
-    -webkit-text-stroke: 0.4px rgba(80,40,10,0.25);
+    opacity: 0.97;
   }
   .greeting .from {
     display: block;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 0.34em;
+    font-family: 'Special Elite', monospace;
+    font-style: normal;
+    font-weight: 400;
+    font-size: 0.3em;
     letter-spacing: 5px;
+    text-transform: uppercase;
     opacity: 0.92;
-    margin-bottom: 0.15em;
+    margin-bottom: 0.25em;
+  }
+  /* ghosted fill-in-the-blank when no location yet */
+  .greeting .place.empty {
+    display: inline-block;
+    min-width: 4.5em;
+    border-bottom: 3px dotted rgba(247,236,214,0.7);
+    opacity: 0.55;
   }
   .caption {
-    font-family: 'Caveat', cursive;
-    color: #fff0d6;
-    font-size: clamp(15px, 4.4vw, 26px);
-    margin: 6px 0 0;
-    text-shadow: 0 1px 4px rgba(60,30,10,0.6);
+    font-family: 'Homemade Apple', cursive;
+    color: #f4e7cd;
+    font-size: clamp(13px, 3.8vw, 22px);
+    line-height: 1.3;
+    margin: 14px 0 0;
+    text-shadow: 0 1px 3px rgba(60,34,14,0.55);
     opacity: 0.95;
   }
   /* faint scratched texture over greeting for distress */
@@ -201,7 +235,7 @@
       radial-gradient(circle at 82% 70%, rgba(150,120,70,0.16), transparent 45%),
       repeating-linear-gradient(0deg, rgba(120,90,40,0.035) 0 2px, transparent 2px 5px),
       repeating-linear-gradient(90deg, rgba(120,90,40,0.04) 0 2px, transparent 2px 6px);
-    color: var(--navy-ink);
+    color: var(--ink);
   }
   /* PAR AVION air-mail border */
   .airmail-border {
@@ -233,7 +267,7 @@
     top: 8%;
     bottom: 8%;
     width: 1.5px;
-    background: rgba(40,60,100,0.45);
+    background: rgba(74,53,32,0.42);
     transform: translateX(-50%);
   }
 
@@ -244,8 +278,8 @@
   }
   .message {
     font-family: 'Caveat', cursive;
-    color: var(--navy-ink);
-    font-size: clamp(16px, 4.8vw, 24px);
+    color: var(--ink);
+    font-size: clamp(17px, 5vw, 25px);
     line-height: 1.25;
     white-space: pre-wrap;
     word-break: break-word;
@@ -277,21 +311,21 @@
     font-family: 'Special Elite', monospace;
     font-size: clamp(11px, 3vw, 15px);
     letter-spacing: 1px;
-    color: var(--navy-ink);
+    color: var(--ink);
     opacity: 0.8;
     margin-bottom: 6px;
   }
   .to-name {
     font-family: 'Caveat', cursive;
     font-size: clamp(18px, 5.2vw, 26px);
-    color: var(--navy-ink);
-    border-bottom: 1.5px solid rgba(40,60,100,0.4);
+    color: var(--ink);
+    border-bottom: 1.5px solid rgba(74,53,32,0.4);
     padding: 0 2px 2px;
     min-height: 1.3em;
     word-break: break-word;
   }
   .addr-line {
-    border-bottom: 1.5px solid rgba(40,60,100,0.3);
+    border-bottom: 1.5px solid rgba(74,53,32,0.3);
     height: 1.5em;
     margin-top: 12px;
   }
@@ -301,8 +335,8 @@
     text-align: center;
     font-family: 'Special Elite', monospace;
     font-size: 12px;
-    color: var(--cream);
-    opacity: 0.75;
+    color: var(--ink);
+    opacity: 0.7;
     margin: 0 0 16px;
     letter-spacing: 1px;
   }
@@ -318,21 +352,21 @@
   .btn {
     flex: 1;
     padding: 16px;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 16px;
+    font-family: 'Special Elite', monospace;
+    font-weight: 400;
+    font-size: 15px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 3px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    color: #fff;
-    box-shadow: 0 4px 0 rgba(0,0,0,0.25);
+    color: #f6eedb;
+    box-shadow: 0 4px 0 rgba(74,53,32,0.35);
     transition: transform 0.08s, box-shadow 0.08s;
   }
-  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,0.25); }
-  .btn-share { background: var(--par-red); }
-  .btn-download { background: var(--navy); }
+  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(74,53,32,0.35); }
+  .btn-share { background: var(--oxblood); }
+  .btn-download { background: var(--inkteal); }
 
   /* ---------------- Controls ---------------- */
   .controls {
@@ -345,12 +379,12 @@
   .field:last-child { margin-bottom: 0; }
   .field label {
     display: block;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
+    font-family: 'Special Elite', monospace;
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 2px;
     font-size: 13px;
-    color: #6b4f2a;
+    color: var(--ink-soft);
     margin-bottom: 7px;
   }
   .field input[type="text"],
@@ -358,17 +392,17 @@
     width: 100%;
     padding: 14px;
     font-size: 16px; /* avoid iOS zoom */
-    font-family: 'Oswald', sans-serif;
+    font-family: 'Special Elite', monospace;
     border: 1.5px solid #c9b48a;
     border-radius: 6px;
     background: #fffaf0;
-    color: #2c2419;
+    color: var(--ink);
   }
-  .field textarea { resize: vertical; min-height: 90px; line-height: 1.4; }
+  .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
   .field input:focus, .field textarea:focus {
     outline: none;
-    border-color: var(--par-red);
-    box-shadow: 0 0 0 3px rgba(200,16,46,0.12);
+    border-color: var(--oxblood);
+    box-shadow: 0 0 0 3px rgba(156,84,70,0.16);
   }
 
   .photo-row { display: flex; gap: 10px; flex-wrap: wrap; }
@@ -379,22 +413,22 @@
     border: 1.5px solid #c9b48a;
     border-radius: 6px;
     background: #fffaf0;
-    font-family: 'Oswald', sans-serif;
-    font-weight: 600;
-    font-size: 13px;
+    font-family: 'Special Elite', monospace;
+    font-weight: 400;
+    font-size: 12px;
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    color: #6b4f2a;
+    color: var(--ink-soft);
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 8px;
   }
   .photo-btn.active {
-    border-color: var(--par-red);
-    background: #fff3e6;
-    box-shadow: 0 0 0 2px rgba(200,16,46,0.18);
+    border-color: var(--oxblood);
+    background: #f7ece1;
+    box-shadow: 0 0 0 2px rgba(156,84,70,0.22);
   }
   .swatch {
     width: 100%;
@@ -410,11 +444,11 @@
   }
   .swatch.sunset {
     background:
-      radial-gradient(circle at 50% 80%, #ffd36b 0%, #ff9e4f 25%, transparent 50%),
-      linear-gradient(180deg, #6b3d77, #c85b7c 55%, #ff8a5b);
+      radial-gradient(circle at 50% 82%, #fff0c4 0%, #e3a85e 28%, transparent 55%),
+      linear-gradient(180deg, #d9b483, #cf945a 55%, #e6c089);
   }
   .swatch.ocean {
-    background: linear-gradient(180deg, #7ec8e3, #2bb0a8 52%, #075b73);
+    background: linear-gradient(180deg, #ddc190, #c9a06a 49%, #876840);
   }
   input[type="file"] { display: none; }
 </style>
@@ -437,7 +471,7 @@
         <div class="vignette"></div>
         <div class="grain"></div>
         <div class="front-text">
-          <h2 class="greeting"><span class="from">Greetings from</span><span id="frontLocation">Tortola</span></h2>
+          <h2 class="greeting"><span class="from">Greetings from</span><span class="place" id="frontLocation">Tortola</span></h2>
           <p class="caption" id="frontCaption">wish you were here</p>
         </div>
       </div>
@@ -477,7 +511,7 @@
   <div class="controls">
     <div class="field">
       <label for="locationInput">Location</label>
-      <input type="text" id="locationInput" value="Tortola" placeholder="Where to?" />
+      <input type="text" id="locationInput" value="" placeholder="Where are you?" />
     </div>
 
     <div class="field">
@@ -541,10 +575,10 @@
   const downloadBtn  = document.getElementById('downloadBtn');
 
   let state = {
-    location: 'Tortola',
+    location: '',       // empty by default — fill-in-the-blank
     caption: 'wish you were here',
     photo: null,        // data URL when uploaded
-    preset: 'sunset',   // active preset when no photo
+    preset: 'sunset',   // active warm preset when no photo
   };
 
   // ---- Date for postmark ----
@@ -567,13 +601,21 @@
 
   // ---- Live text ----
   function render() {
-    const loc = (state.location || '').trim() || 'Somewhere';
-    frontLocation.textContent = loc;
+    const raw = (state.location || '').trim();
+    // Front greeting: fill-in-the-blank when empty
+    if (raw) {
+      frontLocation.textContent = raw;
+      frontLocation.classList.remove('empty');
+    } else {
+      frontLocation.textContent = '';   // CSS shows a dotted ghost blank
+      frontLocation.classList.add('empty');
+    }
     frontCaption.textContent = state.caption || '';
     frontCaption.style.display = (state.caption || '').trim() ? '' : 'none';
     backMessage.textContent = messageInput.value;
     backTo.textContent = toInput.value;
-    buildStamp(loc);
+    // Postmark still needs a label when no place is typed yet
+    buildStamp(raw || 'Somewhere');
   }
 
   // ---- Stamp + postmark SVG ----
@@ -589,33 +631,34 @@
         <!-- scalloped / perforated stamp edge via a mask of holes -->
         <path id="pm-top" d="M 40 100 A 60 60 0 0 1 160 100" fill="none"/>
         <path id="pm-bottom" d="M 44 100 A 56 56 0 0 0 156 100" fill="none"/>
+        <!-- single warm-ink stamp, like an old engraved sepia print -->
         <radialGradient id="sky" cx="50%" cy="35%" r="80%">
-          <stop offset="0%" stop-color="#bfe6f2"/>
-          <stop offset="100%" stop-color="#7cc4d8"/>
+          <stop offset="0%" stop-color="#f0e2c2"/>
+          <stop offset="100%" stop-color="#d9bd8e"/>
         </radialGradient>
       </defs>
 
       <!-- STAMP -->
       <g>
-        <!-- perforated white border drawn as a ring of dots over a rect -->
-        <rect x="22" y="22" width="120" height="140" fill="#fbf4e2" stroke="#d8c9a3" stroke-width="2"/>
+        <!-- perforated border drawn as a ring of dots over a rect -->
+        <rect x="22" y="22" width="120" height="140" fill="#fbf4e2" stroke="#c2a878" stroke-width="2"/>
         <!-- inner picture -->
         <rect x="32" y="32" width="100" height="120" fill="url(#sky)"/>
         <!-- sun -->
-        <circle cx="62" cy="62" r="13" fill="#ffd36b"/>
+        <circle cx="62" cy="62" r="13" fill="#c98f3f" opacity="0.85"/>
         <!-- sea -->
-        <rect x="32" y="112" width="100" height="40" fill="#2bb0a8"/>
-        <path d="M32 112 q12 -8 24 0 t24 0 t24 0 t24 0 v6 h-100 z" fill="#1d8f95"/>
+        <rect x="32" y="112" width="100" height="40" fill="#a07c4c"/>
+        <path d="M32 112 q12 -8 24 0 t24 0 t24 0 t24 0 v6 h-100 z" fill="#84632f"/>
         <!-- palm trunk -->
-        <path d="M96 132 q4 -26 0 -46" stroke="#7a4a23" stroke-width="4" fill="none"/>
+        <path d="M96 132 q4 -26 0 -46" stroke="#6b4a28" stroke-width="4" fill="none"/>
         <!-- palm fronds -->
-        <g stroke="#2e7d4f" stroke-width="4" fill="none" stroke-linecap="round">
+        <g stroke="#7a6630" stroke-width="4" fill="none" stroke-linecap="round">
           <path d="M96 86 q-18 -8 -30 -2"/>
           <path d="M96 86 q18 -8 30 -2"/>
           <path d="M96 86 q-12 -16 -22 -18"/>
           <path d="M96 86 q12 -16 22 -18"/>
         </g>
-        <text x="82" y="150" font-family="'Special Elite', monospace" font-size="9" fill="#3a2f1a" text-anchor="middle" letter-spacing="1">POSTES</text>
+        <text x="82" y="150" font-family="'Special Elite', monospace" font-size="9" fill="#4a3520" text-anchor="middle" letter-spacing="1">POSTES</text>
 
         <!-- perforations: white dots punched along edges -->
         ${perforations()}
@@ -623,22 +666,22 @@
 
       <!-- POSTMARK overlapping top-right of stamp -->
       <g transform="translate(132 70)" opacity="0.82">
-        <circle r="46" fill="none" stroke="#3a2f5a" stroke-width="2.5"/>
-        <circle r="40" fill="none" stroke="#3a2f5a" stroke-width="1.5"/>
+        <circle r="46" fill="none" stroke="#5a3d24" stroke-width="2.5"/>
+        <circle r="40" fill="none" stroke="#5a3d24" stroke-width="1.5"/>
         <path id="ink-top" d="M -40 0 A 40 40 0 0 1 40 0" fill="none"/>
         <path id="ink-bottom" d="M -34 6 A 34 34 0 0 0 34 6" fill="none"/>
-        <text font-family="'Special Elite', monospace" font-size="10" fill="#3a2f5a" letter-spacing="2">
+        <text font-family="'Special Elite', monospace" font-size="10" fill="#5a3d24" letter-spacing="2">
           <textPath href="#ink-top" startOffset="50%" text-anchor="middle">${locUp}</textPath>
         </text>
-        <text font-family="'Special Elite', monospace" font-size="8" fill="#3a2f5a" letter-spacing="2">
+        <text font-family="'Special Elite', monospace" font-size="8" fill="#5a3d24" letter-spacing="2">
           <textPath href="#ink-bottom" startOffset="50%" text-anchor="middle">BRITISH VIRGIN ISLANDS</textPath>
         </text>
-        <text x="0" y="-2" font-family="'Special Elite', monospace" font-size="11" fill="#3a2f5a" text-anchor="middle">${esc(dateStr.split(' ')[0])}</text>
-        <text x="0" y="10" font-family="'Special Elite', monospace" font-size="10" fill="#3a2f5a" text-anchor="middle" letter-spacing="1">${esc(dateStr.split(' ')[1])}</text>
-        <text x="0" y="22" font-family="'Special Elite', monospace" font-size="9" fill="#3a2f5a" text-anchor="middle">${esc(dateStr.split(' ')[2])}</text>
+        <text x="0" y="-2" font-family="'Special Elite', monospace" font-size="11" fill="#5a3d24" text-anchor="middle">${esc(dateStr.split(' ')[0])}</text>
+        <text x="0" y="10" font-family="'Special Elite', monospace" font-size="10" fill="#5a3d24" text-anchor="middle" letter-spacing="1">${esc(dateStr.split(' ')[1])}</text>
+        <text x="0" y="22" font-family="'Special Elite', monospace" font-size="9" fill="#5a3d24" text-anchor="middle">${esc(dateStr.split(' ')[2])}</text>
 
         <!-- wavy cancellation lines trailing to the right -->
-        <g stroke="#3a2f5a" stroke-width="2" fill="none" opacity="0.85">
+        <g stroke="#5a3d24" stroke-width="2" fill="none" opacity="0.85">
           <path d="M40 -14 q12 -6 24 0 t24 0 t24 0"/>
           <path d="M40 -6 q12 -6 24 0 t24 0 t24 0"/>
           <path d="M40 2 q12 -6 24 0 t24 0 t24 0"/>
