@@ -45,19 +45,10 @@
         margin: 0;
         padding: 0;
         background-color: var(--paper);
-        background-image:
-          radial-gradient(
-            circle at 22% 18%,
-            rgba(180, 150, 100, 0.18),
-            transparent 45%
-          ),
-          radial-gradient(
-            circle at 80% 75%,
-            rgba(150, 118, 72, 0.16),
-            transparent 50%
-          ),
-          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.22'/%3E%3C/svg%3E");
-        background-blend-mode: normal, normal, multiply;
+        background-image: url("parchment.png");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         font-family: "Special Elite", system-ui, monospace;
         color: var(--ink);
         min-height: 100%;
@@ -459,6 +450,7 @@
       /* ---------------- Controls ---------------- */
       .controls {
         background: rgba(243, 233, 210, 0.96);
+        border: 1px solid rgba(120, 92, 52, 0.35);
         border-radius: 8px;
         padding: 16px;
         box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
