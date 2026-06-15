@@ -1,710 +1,838 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-<title>Vintage Postcard Maker</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%85%3C/text%3E%3C/svg%3E" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Playfair+Display:ital,wght@1,700;1,800;1,900&family=Homemade+Apple&display=swap" rel="stylesheet" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<style>
-  :root {
-    --paper: #e6d8bd;      /* warm aged page */
-    --mat: #f6eedb;        /* cream/ivory photo mat */
-    --cream: #f3e9d2;
-    --cream-deep: #e7d8b5;
-    --ink: #4a3520;        /* faded sepia ink — never black */
-    --ink-soft: #6b5234;
-    --charcoal: #34302a;   /* inky hand-drawn lines on the back */
-    --inknavy: #2c3744;    /* handwriting ink (message / recipient) */
-    --oxblood: #9c5446;    /* faded Share */
-    --inkteal: #4a6c66;    /* muted Download */
-    --par-red: #c8102e;    /* survives only in PAR AVION stripe */
-    --par-blue: #14366b;
-    --shadow: rgba(74, 53, 32, 0.32);
-  }
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Vintage Postcard Maker</title>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8C%85%3C/text%3E%3C/svg%3E"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Special+Elite&family=Playfair+Display:ital,wght@1,700;1,800;1,900&family=Homemade+Apple&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+      :root {
+        --paper: #e6d8bd; /* warm aged page */
+        --mat: #f6eedb; /* cream/ivory photo mat */
+        --cream: #f3e9d2;
+        --cream-deep: #e7d8b5;
+        --ink: #4a3520; /* faded sepia ink — never black */
+        --ink-soft: #6b5234;
+        --charcoal: #34302a; /* inky hand-drawn lines on the back */
+        --inknavy: #2c3744; /* handwriting ink (message / recipient) */
+        --oxblood: #9c5446; /* faded Share */
+        --inkteal: #4a6c66; /* muted Download */
+        --par-red: #c8102e; /* survives only in PAR AVION stripe */
+        --par-blue: #14366b;
+        --shadow: rgba(74, 53, 32, 0.32);
+      }
 
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
 
-  html, body {
-    margin: 0;
-    padding: 0;
-    background-color: var(--paper);
-    background-image:
-      radial-gradient(circle at 22% 18%, rgba(180,150,100,0.18), transparent 45%),
-      radial-gradient(circle at 80% 75%, rgba(150,118,72,0.16), transparent 50%),
-      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.22'/%3E%3C/svg%3E");
-    background-blend-mode: normal, normal, multiply;
-    font-family: 'Special Elite', system-ui, monospace;
-    color: var(--ink);
-    min-height: 100%;
-  }
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        background-color: var(--paper);
+        background-image:
+          radial-gradient(
+            circle at 22% 18%,
+            rgba(180, 150, 100, 0.18),
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 80% 75%,
+            rgba(150, 118, 72, 0.16),
+            transparent 50%
+          ),
+          url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='p'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23p)' opacity='0.22'/%3E%3C/svg%3E");
+        background-blend-mode: normal, normal, multiply;
+        font-family: "Special Elite", system-ui, monospace;
+        color: var(--ink);
+        min-height: 100%;
+      }
 
-  .app {
-    max-width: 540px;
-    margin: 0 auto;
-    padding: 18px 16px 60px;
-  }
+      .app {
+        max-width: 540px;
+        margin: 0 auto;
+        padding: 18px 16px 60px;
+      }
 
-  .title {
-    text-align: center;
-    margin: 6px 0 18px;
-    color: var(--ink);
-  }
-  .title h1 {
-    font-family: 'Special Elite', monospace;
-    font-weight: 400;
-    letter-spacing: 3px;
-    font-size: 24px;
-    margin: 0;
-    text-transform: uppercase;
-    text-shadow: 0 1px 0 rgba(255,250,235,0.5);
-  }
-  .title p {
-    font-family: 'Special Elite', monospace;
-    font-size: 12px;
-    margin: 5px 0 0;
-    opacity: 0.7;
-    letter-spacing: 1px;
-  }
+      .title {
+        text-align: center;
+        margin: 6px 0 18px;
+        color: var(--ink);
+      }
+      .title h1 {
+        font-family: "Special Elite", monospace;
+        font-weight: 400;
+        letter-spacing: 3px;
+        font-size: 24px;
+        margin: 0;
+        text-transform: uppercase;
+        text-shadow: 0 1px 0 rgba(255, 250, 235, 0.5);
+      }
+      .title p {
+        font-family: "Special Elite", monospace;
+        font-size: 12px;
+        margin: 5px 0 0;
+        opacity: 0.7;
+        letter-spacing: 1px;
+      }
 
-  /* ---------------- Postcard ---------------- */
+      /* ---------------- Postcard ---------------- */
 
-  .stage {
-    perspective: 1600px;
-    margin: 18px auto 22px;
-    /* full-bleed card; soft shadow lifts it off the page */
-    box-shadow: 0 14px 26px var(--shadow);
-  }
+      .stage {
+        perspective: 1600px;
+        margin: 18px auto 22px;
+        /* full-bleed card; soft shadow lifts it off the page */
+        box-shadow: 0 14px 26px var(--shadow);
+      }
 
-  /* Landscape postcard. Width-driven, fixed 3:2 ratio. */
-  .postcard {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3 / 2;
-    transform-style: preserve-3d;
-    transition: transform 0.8s cubic-bezier(0.4, 0.1, 0.2, 1);
-    cursor: pointer;
-  }
-  .postcard.flipped { transform: rotateY(180deg); }
+      /* Landscape postcard. Width-driven, fixed 3:2 ratio. */
+      .postcard {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 3 / 2;
+        transform-style: preserve-3d;
+        transition: transform 0.8s cubic-bezier(0.4, 0.1, 0.2, 1);
+        cursor: pointer;
+      }
+      .postcard.flipped {
+        transform: rotateY(180deg);
+      }
 
-  .face {
-    position: absolute;
-    inset: 0;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    overflow: hidden;
-    border-radius: 2px; /* square-ish corners */
-    background: var(--cream);
-  }
+      .face {
+        position: absolute;
+        inset: 0;
+        backface-visibility: hidden;
+        -webkit-backface-visibility: hidden;
+        overflow: hidden;
+        border-radius: 2px; /* square-ish corners */
+        background: var(--cream);
+      }
 
-  /* ---------------- FRONT ---------------- */
+      /* ---------------- FRONT ---------------- */
 
-  .front {
-    /* warm, never a dark void */
-    background: #d8b88a;
-  }
-  .photo-layer {
-    position: absolute;
-    inset: 0;
-    background-size: cover;
-    background-position: center;
-    /* aged sepia treatment for uploaded photos */
-    filter: sepia(0.55) saturate(0.78) contrast(0.93) brightness(1.05);
-  }
-  /* illustrated SVG scene presets sit here */
-  .scene-layer { position: absolute; inset: 0; overflow: hidden; }
-  .scene-layer svg { width: 100%; height: 100%; display: block; }
-  /* warm sepia colour overlay */
-  .front .warm {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(125deg, rgba(214, 158, 92, 0.32), rgba(196, 132, 78, 0.16) 55%, rgba(150, 104, 60, 0.22));
-    mix-blend-mode: multiply;
-    pointer-events: none;
-  }
-  /* soft warm vignette */
-  .front .vignette {
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(74, 48, 18, 0.42) 100%);
-    pointer-events: none;
-  }
-  /* grain */
-  .grain {
-    position: absolute;
-    inset: 0;
-    opacity: 0.16;
-    pointer-events: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    mix-blend-mode: overlay;
-  }
+      .front {
+        /* warm, never a dark void */
+        background: #d8b88a;
+      }
+      .photo-layer {
+        position: absolute;
+        inset: 0;
+        background-size: cover;
+        background-position: center;
+        /* aged sepia treatment for uploaded photos */
+        filter: sepia(0.55) saturate(0.78) contrast(0.93) brightness(1.05);
+      }
+      /* preset photo backdrops sit here (kept crisp — no heavy sepia) */
+      .scene-layer {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        background-size: cover;
+        background-position: center;
+      }
+      /* light warm overlay to unify uploads & presets (kept subtle) */
+      .front .warm {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          125deg,
+          rgba(214, 158, 92, 0.16),
+          rgba(196, 132, 78, 0.07) 55%,
+          rgba(150, 104, 60, 0.12)
+        );
+        mix-blend-mode: multiply;
+        pointer-events: none;
+      }
+      /* soft warm vignette */
+      .front .vignette {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          rgba(0, 0, 0, 0) 55%,
+          rgba(74, 48, 18, 0.42) 100%
+        );
+        pointer-events: none;
+      }
+      /* grain */
+      .grain {
+        position: absolute;
+        inset: 0;
+        opacity: 0.16;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        mix-blend-mode: overlay;
+      }
 
-  /* soft warm gradient so the greeting stays legible full-bleed */
-  .front-scrim {
-    position: absolute;
-    left: 0; right: 0; bottom: 0;
-    height: 55%;
-    pointer-events: none;
-    z-index: 1;
-    background: linear-gradient(to top,
-      rgba(50, 30, 12, 0.46) 0%,
-      rgba(50, 30, 12, 0.14) 45%,
-      transparent 100%);
-  }
-  .front-text {
-    position: absolute;
-    left: 0; right: 0;
-    bottom: 8%;
-    text-align: center;
-    padding: 0 8%;
-    pointer-events: none;
-    z-index: 2;
-  }
-  .greeting {
-    margin: 0;
-  }
-  .greeting .from {
-    display: block;
-    font-family: 'Special Elite', monospace;
-    font-style: normal;
-    font-weight: 400;
-    font-size: clamp(10px, 2.7vw, 13px);
-    letter-spacing: 4px;
-    text-transform: uppercase;
-    color: #f7ecd6;
-    opacity: 0.92;
-    margin-bottom: 0.35em;
-    text-shadow: 0 1px 2px rgba(54,32,12,0.6);
-  }
-  .greeting .place {
-    display: block;
-    font-family: 'Playfair Display', serif;
-    font-weight: 900;
-    font-style: italic;
-    color: #f7ecd6;
-    /* base size; JS auto-shrinks long names to fit <=2 lines */
-    font-size: clamp(20px, 7vw, 34px);
-    line-height: 0.95;
-    letter-spacing: 0.5px;
-    overflow-wrap: break-word;
-    word-break: break-word;
-    text-shadow:
-      0 1px 0 rgba(74, 40, 14, 0.7),
-      0 2px 6px rgba(54, 32, 12, 0.55),
-      0 0 16px rgba(120, 78, 36, 0.3);
-    -webkit-text-stroke: 0.6px rgba(60, 36, 14, 0.55);
-    opacity: 0.97;
-  }
-  .caption {
-    font-family: 'Homemade Apple', cursive;
-    color: #f4e7cd;
-    font-size: clamp(12px, 3.4vw, 19px);
-    line-height: 1.3;
-    margin: 12px 0 0;
-    text-shadow: 0 1px 3px rgba(60,34,14,0.55);
-    opacity: 0.95;
-  }
+      /* soft warm gradient so the greeting stays legible full-bleed */
+      .front-scrim {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 55%;
+        pointer-events: none;
+        z-index: 1;
+        background: linear-gradient(
+          to top,
+          rgba(50, 30, 12, 0.46) 0%,
+          rgba(50, 30, 12, 0.14) 45%,
+          transparent 100%
+        );
+      }
+      .front-text {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 8%;
+        text-align: center;
+        padding: 0 8%;
+        pointer-events: none;
+        z-index: 2;
+      }
+      .greeting {
+        margin: 0;
+      }
+      .greeting .from {
+        display: block;
+        font-family: "Special Elite", monospace;
+        font-style: normal;
+        font-weight: 400;
+        font-size: clamp(10px, 2.7vw, 13px);
+        letter-spacing: 4px;
+        text-transform: uppercase;
+        color: #f7ecd6;
+        opacity: 0.92;
+        margin-bottom: 0.35em;
+        text-shadow: 0 1px 2px rgba(54, 32, 12, 0.6);
+      }
+      .greeting .place {
+        display: block;
+        font-family: "Playfair Display", serif;
+        font-weight: 900;
+        font-style: italic;
+        color: #f7ecd6;
+        /* base size; JS auto-shrinks long names to fit <=2 lines */
+        font-size: clamp(20px, 7vw, 34px);
+        line-height: 0.95;
+        letter-spacing: 0.5px;
+        overflow-wrap: break-word;
+        word-break: break-word;
+        text-shadow:
+          0 1px 0 rgba(74, 40, 14, 0.7),
+          0 2px 6px rgba(54, 32, 12, 0.55),
+          0 0 16px rgba(120, 78, 36, 0.3);
+        -webkit-text-stroke: 0.6px rgba(60, 36, 14, 0.55);
+        opacity: 0.97;
+      }
+      .caption {
+        font-family: "Homemade Apple", cursive;
+        color: #f4e7cd;
+        font-size: clamp(12px, 3.4vw, 19px);
+        line-height: 1.3;
+        margin: 12px 0 0;
+        text-shadow: 0 1px 3px rgba(60, 34, 14, 0.55);
+        opacity: 0.95;
+      }
 
-  /* ---------------- BACK ---------------- */
+      /* ---------------- BACK ---------------- */
 
-  .back {
-    transform: rotateY(180deg);
-    background-color: #ece0c0;
-    background-image:
-      radial-gradient(circle at 20% 22%, rgba(150,120,70,0.12), transparent 45%),
-      radial-gradient(circle at 82% 78%, rgba(120,95,55,0.12), transparent 50%);
-    color: var(--charcoal);
-  }
-  /* faint speckled grain over the whole back, distressing paper + stripe */
-  .back-grain {
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    opacity: 0.4;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
-    background-size: 200px 200px;
-  }
-  /* PAR AVION air-mail border (a little distressed) */
-  .airmail-border {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    --stripe: repeating-linear-gradient(
-      45deg,
-      var(--par-red) 0 10px,
-      #f3ead0 10px 20px,
-      var(--par-blue) 20px 30px,
-      #f3ead0 30px 40px
-    );
-    border: 9px solid transparent;
-    background:
-      linear-gradient(#ece0c0, #ece0c0) padding-box,
-      var(--stripe) border-box;
-    box-shadow: inset 0 0 0 1px rgba(52,48,42,0.3);
-    opacity: 0.94;
-  }
+      .back {
+        transform: rotateY(180deg);
+        background-color: #ece0c0;
+        background-image:
+          radial-gradient(
+            circle at 20% 22%,
+            rgba(150, 120, 70, 0.12),
+            transparent 45%
+          ),
+          radial-gradient(
+            circle at 82% 78%,
+            rgba(120, 95, 55, 0.12),
+            transparent 50%
+          );
+        color: var(--charcoal);
+      }
+      /* faint speckled grain over the whole back, distressing paper + stripe */
+      .back-grain {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        opacity: 0.4;
+        mix-blend-mode: multiply;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+        background-size: 200px 200px;
+      }
+      /* PAR AVION air-mail border (a little distressed) */
+      .airmail-border {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        --stripe: repeating-linear-gradient(
+          45deg,
+          var(--par-red) 0 10px,
+          #f3ead0 10px 20px,
+          var(--par-blue) 20px 30px,
+          #f3ead0 30px 40px
+        );
+        border: 9px solid transparent;
+        background:
+          linear-gradient(#ece0c0, #ece0c0) padding-box,
+          var(--stripe) border-box;
+        box-shadow: inset 0 0 0 1px rgba(52, 48, 42, 0.3);
+        opacity: 0.94;
+      }
 
-  /* paper area inside the border holds all content */
-  .back-paper { position: absolute; inset: 9px; z-index: 3; }
+      /* paper area inside the border holds all content */
+      .back-paper {
+        position: absolute;
+        inset: 9px;
+        z-index: 3;
+      }
 
-  /* hand-drawn, slightly irregular vertical divider */
-  .ink-divider {
-    position: absolute;
-    left: 50%;
-    top: 7%;
-    height: 86%;
-    width: 14px;
-    transform: translateX(-50%);
-    pointer-events: none;
-  }
-  .ink-divider path {
-    fill: none;
-    stroke: var(--charcoal);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    opacity: 0.7;
-  }
+      /* hand-drawn, slightly irregular vertical divider */
+      .ink-divider {
+        position: absolute;
+        left: 50%;
+        top: 7%;
+        height: 86%;
+        width: 14px;
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+      .ink-divider path {
+        fill: none;
+        stroke: var(--charcoal);
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        opacity: 0.7;
+      }
 
-  .back-cols { position: absolute; inset: 0; display: flex; }
-  .back-left {
-    flex: 1;
-    padding: 16px 12px 14px 18px;
-    overflow: hidden;
-  }
-  .message {
-    font-family: 'Caveat', cursive;
-    color: var(--inknavy);
-    font-size: clamp(14px, 4vw, 19px);
-    line-height: 1.3;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
+      .back-cols {
+        position: absolute;
+        inset: 0;
+        display: flex;
+      }
+      .back-left {
+        flex: 1;
+        padding: 16px 12px 14px 18px;
+        overflow: hidden;
+      }
+      .message {
+        font-family: "Caveat", cursive;
+        color: var(--inknavy);
+        font-size: clamp(14px, 4vw, 19px);
+        line-height: 1.3;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
 
-  .back-right {
-    flex: 1;
-    padding: 14px 16px 14px 12px;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
+      .back-right {
+        flex: 1;
+        padding: 14px 16px 14px 12px;
+        position: relative;
+        display: flex;
+        flex-direction: column;
+      }
 
-  /* hand-drawn stamp box in the top corner; SVG draws box + stamp + postmark */
-  .stamp-box {
-    align-self: flex-end;
-    position: relative;
-    width: 52%;
-    max-width: 132px;
-    aspect-ratio: 1 / 1;
-    margin-bottom: 8px;
-  }
-  .stamp-box svg { width: 100%; height: 100%; overflow: visible; display: block; }
+      /* hand-drawn stamp box in the top corner; SVG draws box + stamp + postmark */
+      .stamp-box {
+        align-self: flex-end;
+        position: relative;
+        width: 52%;
+        max-width: 132px;
+        aspect-ratio: 1 / 1;
+        margin-bottom: 8px;
+      }
+      .stamp-box svg {
+        width: 100%;
+        height: 100%;
+        overflow: visible;
+        display: block;
+      }
 
-  /* hand-drawn address lines below the stamp box */
-  .address { margin-top: auto; }
-  .to-label {
-    font-family: 'Special Elite', monospace;
-    font-size: clamp(10px, 2.8vw, 13px);
-    letter-spacing: 1px;
-    color: var(--charcoal);
-    opacity: 0.85;
-    margin-bottom: 3px;
-  }
-  .addr-line {
-    height: 1.55em;
-    line-height: 1.5em;
-    padding: 0 6px;
-    font-family: 'Caveat', cursive;
-    color: var(--inknavy);
-    font-size: clamp(16px, 4.6vw, 21px);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 6' preserveAspectRatio='none'%3E%3Cpath d='M2 4 Q40 1.5 80 3.5 T160 3 T198 4' fill='none' stroke='%2334302a' stroke-width='1.3' stroke-linecap='round' opacity='0.7'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: left bottom;
-    background-size: 100% 6px;
-  }
-  .addr-line + .addr-line { margin-top: 6px; }
+      /* hand-drawn address lines below the stamp box */
+      .address {
+        margin-top: auto;
+      }
+      .to-label {
+        font-family: "Special Elite", monospace;
+        font-size: clamp(10px, 2.8vw, 13px);
+        letter-spacing: 1px;
+        color: var(--charcoal);
+        opacity: 0.85;
+        margin-bottom: 3px;
+      }
+      .addr-line {
+        height: 1.55em;
+        line-height: 1.5em;
+        padding: 0 6px;
+        font-family: "Caveat", cursive;
+        color: var(--inknavy);
+        font-size: clamp(16px, 4.6vw, 21px);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 6' preserveAspectRatio='none'%3E%3Cpath d='M2 4 Q40 1.5 80 3.5 T160 3 T198 4' fill='none' stroke='%2334302a' stroke-width='1.3' stroke-linecap='round' opacity='0.7'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: left bottom;
+        background-size: 100% 6px;
+      }
+      .addr-line + .addr-line {
+        margin-top: 6px;
+      }
 
-  /* tap hint */
-  .hint {
-    text-align: center;
-    font-family: 'Special Elite', monospace;
-    font-size: 12px;
-    color: var(--ink);
-    opacity: 0.7;
-    margin: 0 0 16px;
-    letter-spacing: 1px;
-  }
-  .hint .dot { animation: pulse 1.8s infinite; }
-  @keyframes pulse { 0%,100%{opacity:0.4} 50%{opacity:1} }
+      /* tap hint */
+      .hint {
+        text-align: center;
+        font-family: "Special Elite", monospace;
+        font-size: 12px;
+        color: var(--ink);
+        opacity: 0.7;
+        margin: 0 0 16px;
+        letter-spacing: 1px;
+      }
+      .hint .dot {
+        animation: pulse 1.8s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 1;
+        }
+      }
 
-  /* ---------------- Buttons ---------------- */
-  .actions {
-    display: flex;
-    gap: 12px;
-    margin-bottom: 26px;
-  }
-  .btn {
-    flex: 1;
-    padding: 16px;
-    font-family: 'Special Elite', monospace;
-    font-weight: 400;
-    font-size: 15px;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    color: #f6eedb;
-    box-shadow: 0 4px 0 rgba(74,53,32,0.35);
-    transition: transform 0.08s, box-shadow 0.08s;
-  }
-  .btn:active { transform: translateY(3px); box-shadow: 0 1px 0 rgba(74,53,32,0.35); }
-  .btn-share { background: var(--oxblood); }
-  .btn-download { background: var(--inkteal); }
+      /* ---------------- Buttons ---------------- */
+      .actions {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 26px;
+      }
+      .btn {
+        flex: 1;
+        padding: 16px;
+        font-family: "Special Elite", monospace;
+        font-weight: 400;
+        font-size: 15px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        color: #f6eedb;
+        box-shadow: 0 4px 0 rgba(74, 53, 32, 0.35);
+        transition:
+          transform 0.08s,
+          box-shadow 0.08s;
+      }
+      .btn:active {
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 rgba(74, 53, 32, 0.35);
+      }
+      .btn-share {
+        background: var(--oxblood);
+      }
+      .btn-download {
+        background: var(--inkteal);
+      }
 
-  /* ---------------- Controls ---------------- */
-  .controls {
-    background: rgba(243, 233, 210, 0.96);
-    border-radius: 8px;
-    padding: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
-  }
-  .field { margin-bottom: 16px; }
-  .field:last-child { margin-bottom: 0; }
-  .field label {
-    display: block;
-    font-family: 'Special Elite', monospace;
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 13px;
-    color: var(--ink-soft);
-    margin-bottom: 7px;
-  }
-  .field input[type="text"],
-  .field textarea {
-    width: 100%;
-    padding: 14px;
-    font-size: 16px; /* avoid iOS zoom */
-    font-family: 'Special Elite', monospace;
-    border: 1.5px solid #c9b48a;
-    border-radius: 6px;
-    background: #fffaf0;
-    color: var(--ink);
-  }
-  .field textarea { resize: vertical; min-height: 90px; line-height: 1.5; }
-  .field input:focus, .field textarea:focus {
-    outline: none;
-    border-color: var(--oxblood);
-    box-shadow: 0 0 0 3px rgba(156,84,70,0.16);
-  }
+      /* ---------------- Controls ---------------- */
+      .controls {
+        background: rgba(243, 233, 210, 0.96);
+        border-radius: 8px;
+        padding: 16px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
+      }
+      .field {
+        margin-bottom: 16px;
+      }
+      .field:last-child {
+        margin-bottom: 0;
+      }
+      .field label {
+        display: block;
+        font-family: "Special Elite", monospace;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 13px;
+        color: var(--ink-soft);
+        margin-bottom: 7px;
+      }
+      .field input[type="text"],
+      .field textarea {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px; /* avoid iOS zoom */
+        font-family: "Special Elite", monospace;
+        border: 1.5px solid #c9b48a;
+        border-radius: 6px;
+        background: #fffaf0;
+        color: var(--ink);
+      }
+      .field textarea {
+        resize: vertical;
+        min-height: 90px;
+        line-height: 1.5;
+      }
+      .field input:focus,
+      .field textarea:focus {
+        outline: none;
+        border-color: var(--oxblood);
+        box-shadow: 0 0 0 3px rgba(156, 84, 70, 0.16);
+      }
 
-  .photo-row { display: flex; gap: 8px; flex-wrap: wrap; }
-  .photo-btn {
-    flex: 1;
-    min-width: 66px;
-    padding: 10px 6px;
-    border: 1.5px solid #c9b48a;
-    border-radius: 6px;
-    background: #fffaf0;
-    font-family: 'Special Elite', monospace;
-    font-weight: 400;
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    cursor: pointer;
-    color: var(--ink-soft);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-  }
-  .photo-btn.active {
-    border-color: var(--oxblood);
-    background: #f7ece1;
-    box-shadow: 0 0 0 2px rgba(156,84,70,0.22);
-  }
-  .swatch {
-    width: 100%;
-    height: 36px;
-    border-radius: 4px;
-    overflow: hidden;
-  }
-  .swatch.upload {
-    background: #e7d8b5;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-  }
-  .swatch.scene svg { width: 100%; height: 100%; display: block; }
-  .counter {
-    font-family: 'Special Elite', monospace;
-    font-size: 12px;
-    color: var(--ink-soft);
-    text-align: right;
-    margin-top: 6px;
-    opacity: 0.8;
-  }
-  input[type="file"] { display: none; }
-</style>
-</head>
-<body>
-<div class="app">
-  <div class="title">
-    <h1>Par Avion</h1>
-    <p>wish you were here, sent first class</p>
-  </div>
-
-  <!-- POSTCARD -->
-  <div class="stage">
-    <div class="postcard" id="postcard">
-
-      <!-- FRONT -->
-      <div class="face front" id="front">
-        <div class="scene-layer" id="sceneLayer"></div>
-        <div class="photo-layer" id="photoLayer"></div>
-        <div class="warm"></div>
-        <div class="vignette"></div>
-        <div class="grain"></div>
-        <div class="front-scrim"></div>
-        <div class="front-text">
-          <h2 class="greeting"><span class="from">Greetings from</span><span class="place" id="frontLocation">Necker Island</span></h2>
-          <p class="caption" id="frontCaption">wish you were here</p>
-        </div>
+      .photo-row {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+      .photo-btn {
+        flex: 1;
+        min-width: 66px;
+        padding: 10px 6px;
+        border: 1.5px solid #c9b48a;
+        border-radius: 6px;
+        background: #fffaf0;
+        font-family: "Special Elite", monospace;
+        font-weight: 400;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        color: var(--ink-soft);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+      }
+      .photo-btn.active {
+        border-color: var(--oxblood);
+        background: #f7ece1;
+        box-shadow: 0 0 0 2px rgba(156, 84, 70, 0.22);
+      }
+      .swatch {
+        width: 100%;
+        height: 36px;
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .swatch.upload {
+        background: #e7d8b5;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      .swatch.scene {
+        background-size: cover;
+        background-position: center;
+      }
+      .counter {
+        font-family: "Special Elite", monospace;
+        font-size: 12px;
+        color: var(--ink-soft);
+        text-align: right;
+        margin-top: 6px;
+        opacity: 0.8;
+      }
+      input[type="file"] {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="title">
+        <h1>-- Par Avion --</h1>
+        <p>wish you were here, sent first class</p>
       </div>
 
-      <!-- BACK -->
-      <div class="face back" id="back">
-        <div class="airmail-border"></div>
-        <div class="back-grain"></div>
-        <div class="back-paper">
-          <svg class="ink-divider" viewBox="0 0 14 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M7 4 Q4 26 7 50 Q10 74 6 100 Q3 126 8 152 Q11 176 7 196"/>
-          </svg>
-          <div class="back-cols">
-            <div class="back-left">
-              <div class="message" id="backMessage"></div>
+      <!-- POSTCARD -->
+      <div class="stage">
+        <div class="postcard" id="postcard">
+          <!-- FRONT -->
+          <div class="face front" id="front">
+            <div class="scene-layer" id="sceneLayer"></div>
+            <div class="photo-layer" id="photoLayer"></div>
+            <div class="warm"></div>
+            <div class="vignette"></div>
+            <div class="grain"></div>
+            <div class="front-scrim"></div>
+            <div class="front-text">
+              <h2 class="greeting">
+                <span class="from">Greetings from</span
+                ><span class="place" id="frontLocation">Necker Island</span>
+              </h2>
+              <p class="caption" id="frontCaption">wish you were here</p>
             </div>
-            <div class="back-right">
-              <div class="stamp-box" id="stampArea"></div>
-              <div class="address">
-                <div class="to-label">To:</div>
-                <div class="addr-line" id="backTo"></div>
-                <div class="addr-line"></div>
-                <div class="addr-line"></div>
-                <div class="addr-line"></div>
+          </div>
+
+          <!-- BACK -->
+          <div class="face back" id="back">
+            <div class="airmail-border"></div>
+            <div class="back-grain"></div>
+            <div class="back-paper">
+              <svg
+                class="ink-divider"
+                viewBox="0 0 14 200"
+                preserveAspectRatio="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M7 4 Q4 26 7 50 Q10 74 6 100 Q3 126 8 152 Q11 176 7 196"
+                />
+              </svg>
+              <div class="back-cols">
+                <div class="back-left">
+                  <div class="message" id="backMessage"></div>
+                </div>
+                <div class="back-right">
+                  <div class="stamp-box" id="stampArea"></div>
+                  <div class="address">
+                    <div class="to-label">To:</div>
+                    <div class="addr-line" id="backTo"></div>
+                    <div class="addr-line"></div>
+                    <div class="addr-line"></div>
+                    <div class="addr-line"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
 
-    </div>
-  </div>
+      <p class="hint">
+        <span class="dot">✦</span> tap the postcard to flip
+        <span class="dot">✦</span>
+      </p>
 
-  <p class="hint"><span class="dot">✦</span> tap the postcard to flip <span class="dot">✦</span></p>
-
-  <!-- ACTIONS -->
-  <div class="actions">
-    <button class="btn btn-share" id="shareBtn">Share</button>
-    <button class="btn btn-download" id="downloadBtn">Download</button>
-  </div>
-
-  <!-- CONTROLS -->
-  <div class="controls">
-    <div class="field">
-      <label for="locationInput">Location</label>
-      <input type="text" id="locationInput" value="Necker Island" placeholder="Where are you?" />
-    </div>
-
-    <div class="field">
-      <label for="captionInput">Caption</label>
-      <input type="text" id="captionInput" value="wish you were here" placeholder="A little note up front" />
-    </div>
-
-    <div class="field">
-      <label>Photo</label>
-      <div class="photo-row">
-        <button class="photo-btn" id="uploadBtn" type="button">
-          <span class="swatch upload">📷</span>
-          Upload
-        </button>
-        <button class="photo-btn active" data-preset="sun" type="button">
-          <span class="swatch scene" data-scene="sun"></span>
-          Sun
-        </button>
-        <button class="photo-btn" data-preset="palm" type="button">
-          <span class="swatch scene" data-scene="palm"></span>
-          Palm
-        </button>
-        <button class="photo-btn" data-preset="harbour" type="button">
-          <span class="swatch scene" data-scene="harbour"></span>
-          Harbour
-        </button>
+      <!-- ACTIONS -->
+      <div class="actions">
+        <button class="btn btn-share" id="shareBtn">Share</button>
+        <button class="btn btn-download" id="downloadBtn">Download</button>
       </div>
-      <input type="file" id="fileInput" accept="image/*" />
+
+      <!-- CONTROLS -->
+      <div class="controls">
+        <div class="field">
+          <label for="locationInput">Location</label>
+          <input
+            type="text"
+            id="locationInput"
+            value="Necker Island"
+            placeholder="Where are you?"
+          />
+        </div>
+
+        <div class="field">
+          <label for="captionInput">Caption</label>
+          <input
+            type="text"
+            id="captionInput"
+            value="wish you were here"
+            placeholder="A little note up front"
+          />
+        </div>
+
+        <div class="field">
+          <label>Photo</label>
+          <div class="photo-row">
+            <button class="photo-btn" id="uploadBtn" type="button">
+              <span class="swatch upload">📷</span>
+              Upload
+            </button>
+            <button class="photo-btn active" data-preset="palm" type="button">
+              <span class="swatch scene" data-scene="palm"></span>
+              Palm
+            </button>
+            <button class="photo-btn" data-preset="sunset" type="button">
+              <span class="swatch scene" data-scene="sunset"></span>
+              Sunset
+            </button>
+            <button class="photo-btn" data-preset="harbour" type="button">
+              <span class="swatch scene" data-scene="harbour"></span>
+              Harbour
+            </button>
+          </div>
+          <input type="file" id="fileInput" accept="image/*" />
+        </div>
+
+        <div class="field">
+          <label for="messageInput">Message</label>
+          <textarea
+            id="messageInput"
+            maxlength="200"
+            placeholder="Dear friend..."
+          >
+Having the most wonderful time. The sea is impossibly blue and the days drift like clouds. Thinking of you always.</textarea
+          >
+          <div class="counter"><span id="msgCount">0</span> / 200</div>
+        </div>
+
+        <div class="field">
+          <label for="toInput">To</label>
+          <input
+            type="text"
+            id="toInput"
+            value="Harry"
+            placeholder="Recipient"
+          />
+        </div>
+      </div>
     </div>
 
-    <div class="field">
-      <label for="messageInput">Message</label>
-      <textarea id="messageInput" maxlength="200" placeholder="Dear friend...">Having the most wonderful time. The sea is impossibly blue and the days drift like clouds. Thinking of you always.</textarea>
-      <div class="counter"><span id="msgCount">0</span> / 200</div>
-    </div>
+    <script>
+      (function () {
+        "use strict";
 
-    <div class="field">
-      <label for="toInput">To</label>
-      <input type="text" id="toInput" value="Harry" placeholder="Recipient" />
-    </div>
-  </div>
-</div>
+        // ---- Elements ----
+        const postcard = document.getElementById("postcard");
+        const front = document.getElementById("front");
+        const photoLayer = document.getElementById("photoLayer");
+        const sceneLayer = document.getElementById("sceneLayer");
+        const frontLocation = document.getElementById("frontLocation");
+        const frontCaption = document.getElementById("frontCaption");
+        const backMessage = document.getElementById("backMessage");
+        const backTo = document.getElementById("backTo");
+        const stampArea = document.getElementById("stampArea");
 
-<script>
-(function () {
-  "use strict";
+        const locationInput = document.getElementById("locationInput");
+        const captionInput = document.getElementById("captionInput");
+        const messageInput = document.getElementById("messageInput");
+        const msgCount = document.getElementById("msgCount");
+        const toInput = document.getElementById("toInput");
+        const fileInput = document.getElementById("fileInput");
+        const uploadBtn = document.getElementById("uploadBtn");
+        const presetBtns = document.querySelectorAll("[data-preset]");
+        const sceneSwatches = document.querySelectorAll(".swatch.scene");
+        const shareBtn = document.getElementById("shareBtn");
+        const downloadBtn = document.getElementById("downloadBtn");
 
-  // ---- Elements ----
-  const postcard     = document.getElementById('postcard');
-  const front        = document.getElementById('front');
-  const photoLayer   = document.getElementById('photoLayer');
-  const sceneLayer   = document.getElementById('sceneLayer');
-  const frontLocation= document.getElementById('frontLocation');
-  const frontCaption = document.getElementById('frontCaption');
-  const backMessage  = document.getElementById('backMessage');
-  const backTo       = document.getElementById('backTo');
-  const stampArea    = document.getElementById('stampArea');
+        let state = {
+          location: "Necker Island", // sensible default; user can replace
+          caption: "wish you were here",
+          photo: null, // data URL when uploaded
+          preset: "palm", // active preset photo when nothing uploaded
+        };
 
-  const locationInput= document.getElementById('locationInput');
-  const captionInput = document.getElementById('captionInput');
-  const messageInput = document.getElementById('messageInput');
-  const msgCount     = document.getElementById('msgCount');
-  const toInput      = document.getElementById('toInput');
-  const fileInput    = document.getElementById('fileInput');
-  const uploadBtn    = document.getElementById('uploadBtn');
-  const presetBtns   = document.querySelectorAll('[data-preset]');
-  const sceneSwatches= document.querySelectorAll('.swatch.scene');
-  const shareBtn     = document.getElementById('shareBtn');
-  const downloadBtn  = document.getElementById('downloadBtn');
+        // ---- Date for postmark ----
+        const MONTHS = [
+          "JAN",
+          "FEB",
+          "MAR",
+          "APR",
+          "MAY",
+          "JUN",
+          "JUL",
+          "AUG",
+          "SEP",
+          "OCT",
+          "NOV",
+          "DEC",
+        ];
+        function postmarkDate() {
+          const d = new Date();
+          return (
+            d.getDate() + " " + MONTHS[d.getMonth()] + " " + d.getFullYear()
+          );
+        }
 
-  let state = {
-    location: 'Necker Island', // sensible default; user can replace
-    caption: 'wish you were here',
-    photo: null,        // data URL when uploaded
-    preset: 'sun',      // active illustrated scene when no photo
-  };
+        // ---- Preset backdrop photos (warm & sun-faded already; kept crisp) ----
+        const PRESETS = {
+          palm: "palm-beach.png",
+          sunset: "sunset-sail.png",
+          harbour: "harbour-town.png",
+        };
 
-  // ---- Date for postmark ----
-  const MONTHS = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
-  function postmarkDate() {
-    const d = new Date();
-    return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
-  }
+        // ---- Front photo / preset ----
+        function applyBackdrop() {
+          if (state.photo) {
+            // uploaded photo: heavy sepia treatment via .photo-layer filter
+            photoLayer.style.backgroundImage = 'url("' + state.photo + '")';
+            photoLayer.style.display = "";
+            sceneLayer.style.display = "none";
+            sceneLayer.style.backgroundImage = "none";
+          } else {
+            // preset photo: crisp, no sepia filter
+            photoLayer.style.backgroundImage = "none";
+            photoLayer.style.display = "none";
+            sceneLayer.style.display = "";
+            sceneLayer.style.backgroundImage =
+              'url("' + PRESETS[state.preset] + '")';
+          }
+        }
 
-  // ---- Minimal mid-century travel-poster scenes (bold shapes, tight sepia) ----
-  function sceneSVG(name) {
-    const open = '<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">';
-    if (name === 'palm') {
-      // one simple palm-tree silhouette over a clean ground line
-      return open + `
-        <rect width="300" height="200" fill="#e9d8af"/>
-        <circle cx="216" cy="58" r="24" fill="#cf9a4e"/>
-        <rect y="166" width="300" height="34" fill="#cda874"/>
-        <line x1="0" y1="166" x2="300" y2="166" stroke="#6b4a28" stroke-width="2"/>
-        <path d="M150 166 q-9 -46 1 -78" fill="none" stroke="#5e4326" stroke-width="7" stroke-linecap="round"/>
-        <g fill="none" stroke="#5e4326" stroke-width="7" stroke-linecap="round">
-          <path d="M151 88 q-28 -10 -48 0"/>
-          <path d="M151 88 q28 -10 48 0"/>
-          <path d="M151 88 q-16 -22 -34 -26"/>
-          <path d="M151 88 q16 -22 34 -26"/>
-        </g>
-      ` + '</svg>';
-    }
-    if (name === 'harbour') {
-      // one small sailboat on a flat sea
-      return open + `
-        <rect width="300" height="122" fill="#e9d8af"/>
-        <rect y="122" width="300" height="78" fill="#cda874"/>
-        <line x1="0" y1="122" x2="300" y2="122" stroke="#6b4a28" stroke-width="2"/>
-        <g fill="#5e4326">
-          <path d="M150 58 L150 116 L112 116 Z"/>
-          <path d="M157 76 L157 116 L186 116 Z"/>
-          <path d="M118 120 L188 120 L177 135 L129 135 Z"/>
-        </g>
-      ` + '</svg>';
-    }
-    // default 'sun' — a flat sun over a single clean horizon line
-    return open + `
-      <rect width="300" height="124" fill="#e9d8af"/>
-      <circle cx="150" cy="104" r="34" fill="#cf9a4e"/>
-      <rect y="124" width="300" height="76" fill="#cda874"/>
-      <line x1="0" y1="124" x2="300" y2="124" stroke="#6b4a28" stroke-width="2"/>
-    ` + '</svg>';
-  }
+        // ---- Live text ----
+        function render() {
+          const raw = (state.location || "").trim();
+          frontLocation.textContent = raw;
+          fitGreeting();
+          frontCaption.textContent = state.caption || "";
+          frontCaption.style.display = (state.caption || "").trim()
+            ? ""
+            : "none";
+          backMessage.textContent = messageInput.value;
+          backTo.textContent = toInput.value;
+          msgCount.textContent = messageInput.value.length;
+          // Postmark falls back to the default if the field is cleared
+          buildStamp(raw || "Necker Island");
+        }
 
-  // ---- Front photo / scene ----
-  function applyBackdrop() {
-    if (state.photo) {
-      photoLayer.style.backgroundImage = 'url("' + state.photo + '")';
-      photoLayer.style.display = '';
-      sceneLayer.style.display = 'none';
-      sceneLayer.innerHTML = '';
-    } else {
-      photoLayer.style.backgroundImage = 'none';
-      photoLayer.style.display = 'none';
-      sceneLayer.style.display = '';
-      sceneLayer.innerHTML = sceneSVG(state.preset);
-    }
-  }
+        // Auto-shrink the greeting so long place names fit on at most two lines.
+        function fitGreeting() {
+          const w = front.clientWidth;
+          if (!w) return;
+          let size = Math.min(34, Math.max(15, w * 0.115));
+          frontLocation.style.fontSize = size + "px";
+          let guard = 60;
+          while (guard-- > 0) {
+            const lineH = size * 0.95; // matches line-height: 0.95
+            if (frontLocation.scrollHeight <= lineH * 2 + 2) break; // fits in <= 2 lines
+            size -= 1.5;
+            if (size <= 13) {
+              frontLocation.style.fontSize = "13px";
+              break;
+            }
+            frontLocation.style.fontSize = size + "px";
+          }
+        }
 
-  // ---- Live text ----
-  function render() {
-    const raw = (state.location || '').trim();
-    frontLocation.textContent = raw;
-    fitGreeting();
-    frontCaption.textContent = state.caption || '';
-    frontCaption.style.display = (state.caption || '').trim() ? '' : 'none';
-    backMessage.textContent = messageInput.value;
-    backTo.textContent = toInput.value;
-    msgCount.textContent = messageInput.value.length;
-    // Postmark falls back to the default if the field is cleared
-    buildStamp(raw || 'Necker Island');
-  }
+        // ---- Stamp + postmark SVG ----
+        function buildStamp(loc) {
+          const dateStr = postmarkDate();
+          // Escape for safe insertion into SVG text
+          const esc = (s) =>
+            String(s)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;");
+          const locUp = esc(loc.toUpperCase());
+          const parts = dateStr.split(" ");
+          const INK = "#34302a"; // charcoal postmark ink
 
-  // Auto-shrink the greeting so long place names fit on at most two lines.
-  function fitGreeting() {
-    const w = front.clientWidth;
-    if (!w) return;
-    let size = Math.min(34, Math.max(15, w * 0.115));
-    frontLocation.style.fontSize = size + 'px';
-    let guard = 60;
-    while (guard-- > 0) {
-      const lineH = size * 0.95;                 // matches line-height: 0.95
-      if (frontLocation.scrollHeight <= lineH * 2 + 2) break;  // fits in <= 2 lines
-      size -= 1.5;
-      if (size <= 13) { frontLocation.style.fontSize = '13px'; break; }
-      frontLocation.style.fontSize = size + 'px';
-    }
-  }
-
-  // ---- Stamp + postmark SVG ----
-  function buildStamp(loc) {
-    const dateStr = postmarkDate();
-    // Escape for safe insertion into SVG text
-    const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    const locUp = esc(loc.toUpperCase());
-    const parts = dateStr.split(' ');
-    const INK = '#34302a';   // charcoal postmark ink
-
-    stampArea.innerHTML = `
+          stampArea.innerHTML = `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <!-- single warm-ink stamp, like an old engraved sepia print -->
@@ -768,139 +896,157 @@
         <text x="0" y="20" font-family="'Special Elite', monospace" font-size="9" fill="${INK}" text-anchor="middle">${esc(parts[2])}</text>
       </g>
     </svg>`;
-  }
+        }
 
-  // perforation dots punched around the stamp rectangle (x26..142, y24..158)
-  function perforations() {
-    let dots = '';
-    const r = 4;
-    const x0 = 26, x1 = 142, y0 = 24, y1 = 158;
-    for (let x = x0; x <= x1; x += 10) {
-      dots += `<circle cx="${x}" cy="${y0}" r="${r}" fill="#ece0c0"/>`;
-      dots += `<circle cx="${x}" cy="${y1}" r="${r}" fill="#ece0c0"/>`;
-    }
-    for (let y = y0; y <= y1; y += 10) {
-      dots += `<circle cx="${x0}" cy="${y}" r="${r}" fill="#ece0c0"/>`;
-      dots += `<circle cx="${x1}" cy="${y}" r="${r}" fill="#ece0c0"/>`;
-    }
-    return dots;
-  }
+        // perforation dots punched around the stamp rectangle (x26..142, y24..158)
+        function perforations() {
+          let dots = "";
+          const r = 4;
+          const x0 = 26,
+            x1 = 142,
+            y0 = 24,
+            y1 = 158;
+          for (let x = x0; x <= x1; x += 10) {
+            dots += `<circle cx="${x}" cy="${y0}" r="${r}" fill="#ece0c0"/>`;
+            dots += `<circle cx="${x}" cy="${y1}" r="${r}" fill="#ece0c0"/>`;
+          }
+          for (let y = y0; y <= y1; y += 10) {
+            dots += `<circle cx="${x0}" cy="${y}" r="${r}" fill="#ece0c0"/>`;
+            dots += `<circle cx="${x1}" cy="${y}" r="${r}" fill="#ece0c0"/>`;
+          }
+          return dots;
+        }
 
-  // ---- Inputs ----
-  locationInput.addEventListener('input', () => { state.location = locationInput.value; render(); });
-  captionInput.addEventListener('input', () => { state.caption = captionInput.value; render(); });
-  messageInput.addEventListener('input', render);
-  toInput.addEventListener('input', render);
-
-  uploadBtn.addEventListener('click', () => fileInput.click());
-  fileInput.addEventListener('change', (e) => {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      state.photo = ev.target.result;
-      setActivePhoto(uploadBtn);
-      applyBackdrop();
-    };
-    reader.readAsDataURL(file);
-  });
-
-  presetBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      state.photo = null;
-      state.preset = btn.dataset.preset;
-      setActivePhoto(btn);
-      applyBackdrop();
-    });
-  });
-
-  function setActivePhoto(activeEl) {
-    uploadBtn.classList.remove('active');
-    presetBtns.forEach((b) => b.classList.remove('active'));
-    activeEl.classList.add('active');
-  }
-
-  // ---- Flip (ignore taps that originate from buttons, none here, but guard) ----
-  postcard.addEventListener('click', () => {
-    postcard.classList.toggle('flipped');
-  });
-
-  // ---- Capture ----
-  async function captureFront() {
-    await document.fonts.ready;
-    const canvas = await html2canvas(front, {
-      scale: 3,
-      backgroundColor: null,
-      useCORS: true,
-      logging: false,
-    });
-    return canvas;
-  }
-
-  function fileNameBase() {
-    const loc = (state.location || 'postcard').trim().replace(/[^\w-]+/g, '_').toLowerCase();
-    return 'postcard_' + (loc || 'postcard');
-  }
-
-  downloadBtn.addEventListener('click', async () => {
-    try {
-      downloadBtn.disabled = true;
-      const canvas = await captureFront();
-      const link = document.createElement('a');
-      link.download = fileNameBase() + '.png';
-      link.href = canvas.toDataURL('image/png');
-      link.click();
-    } catch (err) {
-      console.error(err);
-      alert('Could not generate the postcard image.');
-    } finally {
-      downloadBtn.disabled = false;
-    }
-  });
-
-  shareBtn.addEventListener('click', async () => {
-    try {
-      shareBtn.disabled = true;
-      const canvas = await captureFront();
-      const blob = await new Promise((res) => canvas.toBlob(res, 'image/png'));
-      if (!blob) throw new Error('blob failed');
-      const file = new File([blob], fileNameBase() + '.png', { type: 'image/png' });
-
-      if (navigator.canShare && navigator.canShare({ files: [file] })) {
-        await navigator.share({
-          files: [file],
-          title: 'Greetings from ' + (state.location || 'afar'),
-          text: 'A postcard for you ✦',
+        // ---- Inputs ----
+        locationInput.addEventListener("input", () => {
+          state.location = locationInput.value;
+          render();
         });
-      } else {
-        // fall back to download
-        const link = document.createElement('a');
-        link.download = file.name;
-        link.href = URL.createObjectURL(blob);
-        link.click();
-        URL.revokeObjectURL(link.href);
-      }
-    } catch (err) {
-      if (err && err.name === 'AbortError') return; // user cancelled share sheet
-      console.error(err);
-      alert('Sharing is not available — try Download instead.');
-    } finally {
-      shareBtn.disabled = false;
-    }
-  });
+        captionInput.addEventListener("input", () => {
+          state.caption = captionInput.value;
+          render();
+        });
+        messageInput.addEventListener("input", render);
+        toInput.addEventListener("input", render);
 
-  // ---- Init ----
-  // paint the preset thumbnails with their actual scenes
-  sceneSwatches.forEach((sw) => { sw.innerHTML = sceneSVG(sw.dataset.scene); });
-  applyBackdrop();
-  render();
+        uploadBtn.addEventListener("click", () => fileInput.click());
+        fileInput.addEventListener("change", (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = (ev) => {
+            state.photo = ev.target.result;
+            setActivePhoto(uploadBtn);
+            applyBackdrop();
+          };
+          reader.readAsDataURL(file);
+        });
 
-  // keep the greeting fitted as the layout changes
-  window.addEventListener('resize', fitGreeting);
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(fitGreeting);
-  }
-})();
-</script>
-</body>
+        presetBtns.forEach((btn) => {
+          btn.addEventListener("click", () => {
+            state.photo = null;
+            state.preset = btn.dataset.preset;
+            setActivePhoto(btn);
+            applyBackdrop();
+          });
+        });
+
+        function setActivePhoto(activeEl) {
+          uploadBtn.classList.remove("active");
+          presetBtns.forEach((b) => b.classList.remove("active"));
+          activeEl.classList.add("active");
+        }
+
+        // ---- Flip (ignore taps that originate from buttons, none here, but guard) ----
+        postcard.addEventListener("click", () => {
+          postcard.classList.toggle("flipped");
+        });
+
+        // ---- Capture ----
+        async function captureFront() {
+          await document.fonts.ready;
+          const canvas = await html2canvas(front, {
+            scale: 3,
+            backgroundColor: null,
+            useCORS: true,
+            logging: false,
+          });
+          return canvas;
+        }
+
+        function fileNameBase() {
+          const loc = (state.location || "postcard")
+            .trim()
+            .replace(/[^\w-]+/g, "_")
+            .toLowerCase();
+          return "postcard_" + (loc || "postcard");
+        }
+
+        downloadBtn.addEventListener("click", async () => {
+          try {
+            downloadBtn.disabled = true;
+            const canvas = await captureFront();
+            const link = document.createElement("a");
+            link.download = fileNameBase() + ".png";
+            link.href = canvas.toDataURL("image/png");
+            link.click();
+          } catch (err) {
+            console.error(err);
+            alert("Could not generate the postcard image.");
+          } finally {
+            downloadBtn.disabled = false;
+          }
+        });
+
+        shareBtn.addEventListener("click", async () => {
+          try {
+            shareBtn.disabled = true;
+            const canvas = await captureFront();
+            const blob = await new Promise((res) =>
+              canvas.toBlob(res, "image/png"),
+            );
+            if (!blob) throw new Error("blob failed");
+            const file = new File([blob], fileNameBase() + ".png", {
+              type: "image/png",
+            });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                files: [file],
+                title: "Greetings from " + (state.location || "afar"),
+                text: "A postcard for you ✦",
+              });
+            } else {
+              // fall back to download
+              const link = document.createElement("a");
+              link.download = file.name;
+              link.href = URL.createObjectURL(blob);
+              link.click();
+              URL.revokeObjectURL(link.href);
+            }
+          } catch (err) {
+            if (err && err.name === "AbortError") return; // user cancelled share sheet
+            console.error(err);
+            alert("Sharing is not available — try Download instead.");
+          } finally {
+            shareBtn.disabled = false;
+          }
+        });
+
+        // ---- Init ----
+        // show each preset's actual image in its thumbnail (object-fit: cover)
+        sceneSwatches.forEach((sw) => {
+          sw.style.backgroundImage = 'url("' + PRESETS[sw.dataset.scene] + '")';
+        });
+        applyBackdrop();
+        render();
+
+        // keep the greeting fitted as the layout changes
+        window.addEventListener("resize", fitGreeting);
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(fitGreeting);
+        }
+      })();
+    </script>
+  </body>
 </html>
