@@ -16,6 +16,8 @@
     --cream-deep: #e7d8b5;
     --ink: #4a3520;        /* faded sepia ink — never black */
     --ink-soft: #6b5234;
+    --charcoal: #34302a;   /* inky hand-drawn lines on the back */
+    --inknavy: #2c3744;    /* handwriting ink (message / recipient) */
     --oxblood: #9c5446;    /* faded Share */
     --inkteal: #4a6c66;    /* muted Download */
     --par-red: #c8102e;    /* survives only in PAR AVION stripe */
@@ -89,7 +91,6 @@
     transform-style: preserve-3d;
     transition: transform 0.8s cubic-bezier(0.4, 0.1, 0.2, 1);
     cursor: pointer;
-    filter: drop-shadow(0 6px 10px rgba(74,53,32,0.28));
   }
   .postcard.flipped { transform: rotateY(180deg); }
 
@@ -114,8 +115,19 @@
     inset: 0;
     background-size: cover;
     background-position: center;
-    /* aged sepia treatment, applied to uploads and presets alike */
+    /* aged sepia treatment for uploaded photos */
     filter: sepia(0.55) saturate(0.78) contrast(0.93) brightness(1.05);
+  }
+  /* illustrated SVG scene presets sit here */
+  .scene-layer { position: absolute; inset: 0; overflow: hidden; }
+  .scene-layer svg { width: 100%; height: 100%; display: block; }
+  /* cream photo-print edge around the front image */
+  .print-frame {
+    position: absolute;
+    inset: 0;
+    border: 12px solid var(--mat);
+    pointer-events: none;
+    z-index: 1;
   }
   /* warm sepia colour overlay */
   .front .warm {
@@ -143,192 +155,183 @@
     mix-blend-mode: overlay;
   }
 
-  /* preset backdrops (pure CSS) — warm & sun-bleached, never dark */
-  .preset-sunset {
-    background:
-      radial-gradient(circle at 50% 80%, #fff0c4 0%, #f4cf86 9%, #e3a85e 22%, transparent 46%),
-      linear-gradient(180deg, #d9b483 0%, #d8a96c 30%, #cf945a 52%, #d8a263 60%, #e6c089 100%);
-  }
-  .preset-ocean {
-    background:
-      linear-gradient(180deg, #ddc190 0%, #d4b27d 34%, #c9a06a 49%, #b08a5a 52%, #9c7a4d 78%, #876840 100%);
-  }
-  .preset-sunset::after, .preset-ocean::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-  }
-  /* faint horizon line so it reads as an old sun-bleached photo */
-  .preset-sunset::after {
-    background: linear-gradient(180deg, transparent 0 59.5%, rgba(120,86,46,0.35) 60%, transparent 60.5%);
-  }
-  .preset-ocean::after {
-    top: 52%;
-    background:
-      linear-gradient(180deg, rgba(120,86,46,0.3) 0 1.5px, transparent 1.5px),
-      repeating-linear-gradient(180deg, transparent 0 14px, rgba(255,248,230,0.07) 14px 15px);
-  }
-
   .front-text {
     position: absolute;
     left: 0; right: 0;
-    bottom: 7%;
+    bottom: 8%;
     text-align: center;
-    padding: 0 6%;
+    padding: 0 8%;
     pointer-events: none;
+    z-index: 2;
   }
   .greeting {
-    font-family: 'Playfair Display', serif;
-    font-weight: 900;
-    font-style: italic;
-    color: #f7ecd6;
-    font-size: clamp(26px, 9vw, 52px);
-    line-height: 0.95;
-    letter-spacing: 0.5px;
     margin: 0;
-    text-shadow:
-      0 1px 0 rgba(74, 40, 14, 0.7),
-      0 2px 6px rgba(54, 32, 12, 0.55),
-      0 0 16px rgba(120, 78, 36, 0.3);
-    -webkit-text-stroke: 0.6px rgba(60, 36, 14, 0.55);
-    /* distressed / faded */
-    opacity: 0.97;
   }
   .greeting .from {
     display: block;
     font-family: 'Special Elite', monospace;
     font-style: normal;
     font-weight: 400;
-    font-size: 0.3em;
-    letter-spacing: 5px;
+    font-size: clamp(10px, 2.7vw, 13px);
+    letter-spacing: 4px;
     text-transform: uppercase;
+    color: #f7ecd6;
     opacity: 0.92;
-    margin-bottom: 0.25em;
+    margin-bottom: 0.35em;
+    text-shadow: 0 1px 2px rgba(54,32,12,0.6);
   }
-  /* ghosted fill-in-the-blank when no location yet */
-  .greeting .place.empty {
-    display: inline-block;
-    min-width: 4.5em;
-    border-bottom: 3px dotted rgba(247,236,214,0.7);
-    opacity: 0.55;
+  .greeting .place {
+    display: block;
+    font-family: 'Playfair Display', serif;
+    font-weight: 900;
+    font-style: italic;
+    color: #f7ecd6;
+    /* base size; JS auto-shrinks long names to fit <=2 lines */
+    font-size: clamp(20px, 7vw, 34px);
+    line-height: 0.95;
+    letter-spacing: 0.5px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    text-shadow:
+      0 1px 0 rgba(74, 40, 14, 0.7),
+      0 2px 6px rgba(54, 32, 12, 0.55),
+      0 0 16px rgba(120, 78, 36, 0.3);
+    -webkit-text-stroke: 0.6px rgba(60, 36, 14, 0.55);
+    opacity: 0.97;
   }
   .caption {
     font-family: 'Homemade Apple', cursive;
     color: #f4e7cd;
-    font-size: clamp(13px, 3.8vw, 22px);
+    font-size: clamp(12px, 3.4vw, 19px);
     line-height: 1.3;
-    margin: 14px 0 0;
+    margin: 12px 0 0;
     text-shadow: 0 1px 3px rgba(60,34,14,0.55);
     opacity: 0.95;
   }
-  /* faint scratched texture over greeting for distress */
-  .front-text::after { content: none; }
 
   /* ---------------- BACK ---------------- */
 
   .back {
     transform: rotateY(180deg);
-    background-color: #f1e6c9;
+    background-color: #ece0c0;
     background-image:
-      radial-gradient(circle at 18% 22%, rgba(180,150,90,0.16), transparent 40%),
-      radial-gradient(circle at 82% 70%, rgba(150,120,70,0.16), transparent 45%),
-      repeating-linear-gradient(0deg, rgba(120,90,40,0.035) 0 2px, transparent 2px 5px),
-      repeating-linear-gradient(90deg, rgba(120,90,40,0.04) 0 2px, transparent 2px 6px);
-    color: var(--ink);
+      radial-gradient(circle at 20% 22%, rgba(150,120,70,0.12), transparent 45%),
+      radial-gradient(circle at 82% 78%, rgba(120,95,55,0.12), transparent 50%);
+    color: var(--charcoal);
   }
-  /* PAR AVION air-mail border */
+  /* faint speckled grain over the whole back, distressing paper + stripe */
+  .back-grain {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    opacity: 0.4;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    background-size: 200px 200px;
+  }
+  /* PAR AVION air-mail border (a little distressed) */
   .airmail-border {
     position: absolute;
     inset: 0;
-    padding: 0;
+    z-index: 1;
     pointer-events: none;
     --stripe: repeating-linear-gradient(
       45deg,
       var(--par-red) 0 10px,
-      #fff 10px 20px,
+      #f3ead0 10px 20px,
       var(--par-blue) 20px 30px,
-      #fff 30px 40px
+      #f3ead0 30px 40px
     );
     border: 9px solid transparent;
     background:
-      linear-gradient(#f1e6c9, #f1e6c9) padding-box,
+      linear-gradient(#ece0c0, #ece0c0) padding-box,
       var(--stripe) border-box;
+    box-shadow: inset 0 0 0 1px rgba(52,48,42,0.3);
+    opacity: 0.94;
   }
 
-  .back-inner {
-    position: absolute;
-    inset: 9px;
-    display: flex;
-  }
-  .divider {
+  /* paper area inside the border holds all content */
+  .back-paper { position: absolute; inset: 9px; z-index: 3; }
+
+  /* hand-drawn, slightly irregular vertical divider */
+  .ink-divider {
     position: absolute;
     left: 50%;
-    top: 8%;
-    bottom: 8%;
-    width: 1.5px;
-    background: rgba(74,53,32,0.42);
+    top: 7%;
+    height: 86%;
+    width: 14px;
     transform: translateX(-50%);
+    pointer-events: none;
+  }
+  .ink-divider path {
+    fill: none;
+    stroke: var(--charcoal);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0.7;
   }
 
+  .back-cols { position: absolute; inset: 0; display: flex; }
   .back-left {
     flex: 1;
-    padding: 14px 12px 12px 14px;
+    padding: 16px 12px 14px 18px;
     overflow: hidden;
   }
   .message {
     font-family: 'Caveat', cursive;
-    color: var(--ink);
-    font-size: clamp(17px, 5vw, 25px);
-    line-height: 1.25;
+    color: var(--inknavy);
+    font-size: clamp(14px, 4vw, 19px);
+    line-height: 1.3;
     white-space: pre-wrap;
     word-break: break-word;
   }
 
   .back-right {
     flex: 1;
-    padding: 14px 14px 12px 12px;
+    padding: 14px 16px 14px 12px;
     position: relative;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
   }
 
-  .stamp-area {
-    position: absolute;
-    top: 8px;
-    right: 8px;
-    width: 38%;
-    max-width: 120px;
+  /* hand-drawn stamp box in the top corner; SVG draws box + stamp + postmark */
+  .stamp-box {
+    align-self: flex-end;
+    position: relative;
+    width: 52%;
+    max-width: 132px;
     aspect-ratio: 1 / 1;
+    margin-bottom: 8px;
   }
-  .stamp-area svg { width: 100%; height: 100%; overflow: visible; }
+  .stamp-box svg { width: 100%; height: 100%; overflow: visible; display: block; }
 
-  .to-block {
-    margin-bottom: 4px;
-  }
+  /* hand-drawn address lines below the stamp box */
+  .address { margin-top: auto; }
   .to-label {
     font-family: 'Special Elite', monospace;
-    font-size: clamp(11px, 3vw, 15px);
+    font-size: clamp(10px, 2.8vw, 13px);
     letter-spacing: 1px;
-    color: var(--ink);
-    opacity: 0.8;
-    margin-bottom: 6px;
-  }
-  .to-name {
-    font-family: 'Caveat', cursive;
-    font-size: clamp(18px, 5.2vw, 26px);
-    color: var(--ink);
-    border-bottom: 1.5px solid rgba(74,53,32,0.4);
-    padding: 0 2px 2px;
-    min-height: 1.3em;
-    word-break: break-word;
+    color: var(--charcoal);
+    opacity: 0.85;
+    margin-bottom: 3px;
   }
   .addr-line {
-    border-bottom: 1.5px solid rgba(74,53,32,0.3);
-    height: 1.5em;
-    margin-top: 12px;
+    height: 1.55em;
+    line-height: 1.5em;
+    padding: 0 6px;
+    font-family: 'Caveat', cursive;
+    color: var(--inknavy);
+    font-size: clamp(16px, 4.6vw, 21px);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 6' preserveAspectRatio='none'%3E%3Cpath d='M2 4 Q40 1.5 80 3.5 T160 3 T198 4' fill='none' stroke='%2334302a' stroke-width='1.3' stroke-linecap='round' opacity='0.7'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: left bottom;
+    background-size: 100% 6px;
   }
+  .addr-line + .addr-line { margin-top: 6px; }
 
   /* tap hint */
   .hint {
@@ -405,11 +408,11 @@
     box-shadow: 0 0 0 3px rgba(156,84,70,0.16);
   }
 
-  .photo-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .photo-row { display: flex; gap: 8px; flex-wrap: wrap; }
   .photo-btn {
     flex: 1;
-    min-width: 90px;
-    padding: 12px 8px;
+    min-width: 66px;
+    padding: 10px 6px;
     border: 1.5px solid #c9b48a;
     border-radius: 6px;
     background: #fffaf0;
@@ -432,8 +435,9 @@
   }
   .swatch {
     width: 100%;
-    height: 34px;
+    height: 36px;
     border-radius: 4px;
+    overflow: hidden;
   }
   .swatch.upload {
     background: #e7d8b5;
@@ -442,13 +446,14 @@
     justify-content: center;
     font-size: 20px;
   }
-  .swatch.sunset {
-    background:
-      radial-gradient(circle at 50% 82%, #fff0c4 0%, #e3a85e 28%, transparent 55%),
-      linear-gradient(180deg, #d9b483, #cf945a 55%, #e6c089);
-  }
-  .swatch.ocean {
-    background: linear-gradient(180deg, #ddc190, #c9a06a 49%, #876840);
+  .swatch.scene svg { width: 100%; height: 100%; display: block; }
+  .counter {
+    font-family: 'Special Elite', monospace;
+    font-size: 12px;
+    color: var(--ink-soft);
+    text-align: right;
+    margin-top: 6px;
+    opacity: 0.8;
   }
   input[type="file"] { display: none; }
 </style>
@@ -456,8 +461,8 @@
 <body>
 <div class="app">
   <div class="title">
-    <h1>Postcard Studio</h1>
-    <p>— sun-faded greetings since 1962 —</p>
+    <h1>Par Avion</h1>
+    <p>wish you were here, sent first class</p>
   </div>
 
   <!-- POSTCARD -->
@@ -466,12 +471,14 @@
 
       <!-- FRONT -->
       <div class="face front" id="front">
+        <div class="scene-layer" id="sceneLayer"></div>
         <div class="photo-layer" id="photoLayer"></div>
         <div class="warm"></div>
         <div class="vignette"></div>
         <div class="grain"></div>
+        <div class="print-frame"></div>
         <div class="front-text">
-          <h2 class="greeting"><span class="from">Greetings from</span><span class="place" id="frontLocation">Tortola</span></h2>
+          <h2 class="greeting"><span class="from">Greetings from</span><span class="place" id="frontLocation">Necker Island</span></h2>
           <p class="caption" id="frontCaption">wish you were here</p>
         </div>
       </div>
@@ -479,18 +486,24 @@
       <!-- BACK -->
       <div class="face back" id="back">
         <div class="airmail-border"></div>
-        <div class="divider"></div>
-        <div class="back-inner">
-          <div class="back-left">
-            <div class="message" id="backMessage"></div>
-          </div>
-          <div class="back-right">
-            <div class="stamp-area" id="stampArea"></div>
-            <div class="to-block">
-              <div class="to-label">To:</div>
-              <div class="to-name" id="backTo"></div>
-              <div class="addr-line"></div>
-              <div class="addr-line"></div>
+        <div class="back-grain"></div>
+        <div class="back-paper">
+          <svg class="ink-divider" viewBox="0 0 14 200" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 4 Q4 26 7 50 Q10 74 6 100 Q3 126 8 152 Q11 176 7 196"/>
+          </svg>
+          <div class="back-cols">
+            <div class="back-left">
+              <div class="message" id="backMessage"></div>
+            </div>
+            <div class="back-right">
+              <div class="stamp-box" id="stampArea"></div>
+              <div class="address">
+                <div class="to-label">To:</div>
+                <div class="addr-line" id="backTo"></div>
+                <div class="addr-line"></div>
+                <div class="addr-line"></div>
+                <div class="addr-line"></div>
+              </div>
             </div>
           </div>
         </div>
@@ -511,7 +524,7 @@
   <div class="controls">
     <div class="field">
       <label for="locationInput">Location</label>
-      <input type="text" id="locationInput" value="" placeholder="Where are you?" />
+      <input type="text" id="locationInput" value="Necker Island" placeholder="Where are you?" />
     </div>
 
     <div class="field">
@@ -526,13 +539,17 @@
           <span class="swatch upload">📷</span>
           Upload
         </button>
-        <button class="photo-btn active" data-preset="sunset" type="button">
-          <span class="swatch sunset"></span>
-          Sunset
+        <button class="photo-btn active" data-preset="sun" type="button">
+          <span class="swatch scene" data-scene="sun"></span>
+          Sun
         </button>
-        <button class="photo-btn" data-preset="ocean" type="button">
-          <span class="swatch ocean"></span>
-          Ocean
+        <button class="photo-btn" data-preset="palm" type="button">
+          <span class="swatch scene" data-scene="palm"></span>
+          Palm
+        </button>
+        <button class="photo-btn" data-preset="harbour" type="button">
+          <span class="swatch scene" data-scene="harbour"></span>
+          Harbour
         </button>
       </div>
       <input type="file" id="fileInput" accept="image/*" />
@@ -540,7 +557,8 @@
 
     <div class="field">
       <label for="messageInput">Message</label>
-      <textarea id="messageInput" placeholder="Dear friend...">Having the most wonderful time. The sea is impossibly blue and the days drift by like clouds. Thinking of you always.</textarea>
+      <textarea id="messageInput" maxlength="200" placeholder="Dear friend...">Having the most wonderful time. The sea is impossibly blue and the days drift like clouds. Thinking of you always.</textarea>
+      <div class="counter"><span id="msgCount">0</span> / 200</div>
     </div>
 
     <div class="field">
@@ -558,6 +576,7 @@
   const postcard     = document.getElementById('postcard');
   const front        = document.getElementById('front');
   const photoLayer   = document.getElementById('photoLayer');
+  const sceneLayer   = document.getElementById('sceneLayer');
   const frontLocation= document.getElementById('frontLocation');
   const frontCaption = document.getElementById('frontCaption');
   const backMessage  = document.getElementById('backMessage');
@@ -567,18 +586,20 @@
   const locationInput= document.getElementById('locationInput');
   const captionInput = document.getElementById('captionInput');
   const messageInput = document.getElementById('messageInput');
+  const msgCount     = document.getElementById('msgCount');
   const toInput      = document.getElementById('toInput');
   const fileInput    = document.getElementById('fileInput');
   const uploadBtn    = document.getElementById('uploadBtn');
   const presetBtns   = document.querySelectorAll('[data-preset]');
+  const sceneSwatches= document.querySelectorAll('.swatch.scene');
   const shareBtn     = document.getElementById('shareBtn');
   const downloadBtn  = document.getElementById('downloadBtn');
 
   let state = {
-    location: '',       // empty by default — fill-in-the-blank
+    location: 'Necker Island', // sensible default; user can replace
     caption: 'wish you were here',
     photo: null,        // data URL when uploaded
-    preset: 'sunset',   // active warm preset when no photo
+    preset: 'sun',      // active illustrated scene when no photo
   };
 
   // ---- Date for postmark ----
@@ -588,34 +609,126 @@
     return d.getDate() + ' ' + MONTHS[d.getMonth()] + ' ' + d.getFullYear();
   }
 
-  // ---- Front photo / preset ----
+  // ---- Illustrated SVG scenes (stylised flat-vector, faded sepia) ----
+  function sceneSVG(name) {
+    const open = '<svg viewBox="0 0 300 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">';
+    if (name === 'palm') {
+      return open + `
+        <rect width="300" height="200" fill="#e9d5a6"/>
+        <circle cx="242" cy="44" r="21" fill="#d2a052" opacity="0.85"/>
+        <rect y="116" width="300" height="36" fill="#b1894f"/>
+        <line x1="0" y1="116" x2="300" y2="116" stroke="#9a784a" stroke-width="1.5" opacity="0.5"/>
+        <path d="M0 150 Q150 138 300 150 L300 200 L0 200 Z" fill="#d8bd86"/>
+        <path d="M0 160 Q150 150 300 160" fill="none" stroke="#bfa066" stroke-width="1.5" opacity="0.5"/>
+        <path d="M86 198 Q78 150 92 96" fill="none" stroke="#6e4a28" stroke-width="7" stroke-linecap="round"/>
+        <g fill="none" stroke="#7a6630" stroke-width="6" stroke-linecap="round">
+          <path d="M92 96 q-32 -12 -54 -4"/>
+          <path d="M92 96 q32 -14 56 -2"/>
+          <path d="M92 96 q-22 -28 -42 -34"/>
+          <path d="M92 96 q24 -26 48 -28"/>
+          <path d="M92 96 q-4 -30 2 -46"/>
+        </g>
+        <circle cx="89" cy="101" r="4" fill="#6e4a28"/>
+        <circle cx="97" cy="103" r="4" fill="#6e4a28"/>
+      ` + '</svg>';
+    }
+    if (name === 'harbour') {
+      return open + `
+        <defs><linearGradient id="seaH" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#b08a52"/><stop offset="1" stop-color="#876841"/>
+        </linearGradient></defs>
+        <rect width="300" height="200" fill="#e7d3a2"/>
+        <path d="M0 120 Q50 98 100 116 Q150 96 200 116 Q250 100 300 118 L300 124 L0 124 Z" fill="#c1a36c" opacity="0.7"/>
+        <g fill="#a9854f">
+          <rect x="30" y="104" width="14" height="18"/>
+          <rect x="46" y="96" width="12" height="26"/>
+          <rect x="60" y="108" width="10" height="14"/>
+          <rect x="236" y="102" width="12" height="20"/>
+          <rect x="250" y="108" width="10" height="14"/>
+        </g>
+        <line x1="0" y1="122" x2="300" y2="122" stroke="#8a6a3e" stroke-width="1.5" opacity="0.4"/>
+        <rect y="122" width="300" height="78" fill="url(#seaH)"/>
+        <g>
+          <path d="M150 100 L150 150 L118 150 Z" fill="#f1e5c4"/>
+          <path d="M150 102 L150 150 L180 150 Z" fill="#e3d2a8"/>
+          <line x1="150" y1="96" x2="150" y2="150" stroke="#6e4a28" stroke-width="2"/>
+          <path d="M120 150 L182 150 L172 164 L130 164 Z" fill="#6e4a28"/>
+        </g>
+        <g fill="none" stroke="#7a5c34" stroke-width="2" stroke-linecap="round" opacity="0.5">
+          <path d="M36 178 q14 -5 28 0 t28 0"/>
+          <path d="M200 184 q14 -5 28 0 t28 0"/>
+          <path d="M120 190 q14 -5 28 0 t28 0"/>
+        </g>
+      ` + '</svg>';
+    }
+    // default 'sun' — a low sun over water with a horizon line
+    return open + `
+      <defs>
+        <linearGradient id="skyS" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#e6d1a0"/><stop offset="1" stop-color="#f2d99c"/>
+        </linearGradient>
+        <linearGradient id="seaS" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#bb9056"/><stop offset="1" stop-color="#896840"/>
+        </linearGradient>
+      </defs>
+      <rect width="300" height="124" fill="url(#skyS)"/>
+      <circle cx="150" cy="122" r="40" fill="#d3a052"/>
+      <circle cx="150" cy="122" r="26" fill="#e3b86c"/>
+      <line x1="0" y1="124" x2="300" y2="124" stroke="#96743f" stroke-width="1.5" opacity="0.55"/>
+      <rect y="124" width="300" height="76" fill="url(#seaS)"/>
+      <rect x="138" y="124" width="24" height="76" fill="#e3b86c" opacity="0.3"/>
+      <g fill="none" stroke="#7a5c34" stroke-width="2" stroke-linecap="round" opacity="0.5">
+        <path d="M24 140 q14 -5 28 0 t28 0"/>
+        <path d="M196 150 q14 -5 28 0 t28 0"/>
+        <path d="M60 166 q14 -5 28 0 t28 0"/>
+        <path d="M188 178 q14 -5 28 0 t28 0"/>
+      </g>
+    ` + '</svg>';
+  }
+
+  // ---- Front photo / scene ----
   function applyBackdrop() {
-    photoLayer.classList.remove('preset-sunset', 'preset-ocean');
     if (state.photo) {
       photoLayer.style.backgroundImage = 'url("' + state.photo + '")';
+      photoLayer.style.display = '';
+      sceneLayer.style.display = 'none';
+      sceneLayer.innerHTML = '';
     } else {
       photoLayer.style.backgroundImage = 'none';
-      photoLayer.classList.add('preset-' + state.preset);
+      photoLayer.style.display = 'none';
+      sceneLayer.style.display = '';
+      sceneLayer.innerHTML = sceneSVG(state.preset);
     }
   }
 
   // ---- Live text ----
   function render() {
     const raw = (state.location || '').trim();
-    // Front greeting: fill-in-the-blank when empty
-    if (raw) {
-      frontLocation.textContent = raw;
-      frontLocation.classList.remove('empty');
-    } else {
-      frontLocation.textContent = '';   // CSS shows a dotted ghost blank
-      frontLocation.classList.add('empty');
-    }
+    frontLocation.textContent = raw;
+    fitGreeting();
     frontCaption.textContent = state.caption || '';
     frontCaption.style.display = (state.caption || '').trim() ? '' : 'none';
     backMessage.textContent = messageInput.value;
     backTo.textContent = toInput.value;
-    // Postmark still needs a label when no place is typed yet
-    buildStamp(raw || 'Somewhere');
+    msgCount.textContent = messageInput.value.length;
+    // Postmark falls back to the default if the field is cleared
+    buildStamp(raw || 'Necker Island');
+  }
+
+  // Auto-shrink the greeting so long place names fit on at most two lines.
+  function fitGreeting() {
+    const w = front.clientWidth;
+    if (!w) return;
+    let size = Math.min(34, Math.max(15, w * 0.115));
+    frontLocation.style.fontSize = size + 'px';
+    let guard = 60;
+    while (guard-- > 0) {
+      const lineH = size * 0.95;                 // matches line-height: 0.95
+      if (frontLocation.scrollHeight <= lineH * 2 + 2) break;  // fits in <= 2 lines
+      size -= 1.5;
+      if (size <= 13) { frontLocation.style.fontSize = '13px'; break; }
+      frontLocation.style.fontSize = size + 'px';
+    }
   }
 
   // ---- Stamp + postmark SVG ----
@@ -624,13 +737,12 @@
     // Escape for safe insertion into SVG text
     const esc = (s) => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     const locUp = esc(loc.toUpperCase());
+    const parts = dateStr.split(' ');
+    const INK = '#34302a';   // charcoal postmark ink
 
     stampArea.innerHTML = `
     <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <!-- scalloped / perforated stamp edge via a mask of holes -->
-        <path id="pm-top" d="M 40 100 A 60 60 0 0 1 160 100" fill="none"/>
-        <path id="pm-bottom" d="M 44 100 A 56 56 0 0 0 156 100" fill="none"/>
         <!-- single warm-ink stamp, like an old engraved sepia print -->
         <radialGradient id="sky" cx="50%" cy="35%" r="80%">
           <stop offset="0%" stop-color="#f0e2c2"/>
@@ -638,71 +750,74 @@
         </radialGradient>
       </defs>
 
+      <!-- hand-drawn stamp box printed on the postcard -->
+      <path d="M17 16 Q84 12 150 16 Q154 90 150 168 Q84 172 16 167 Q12 90 17 16 Z"
+            fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.65"/>
+
       <!-- STAMP -->
       <g>
         <!-- perforated border drawn as a ring of dots over a rect -->
-        <rect x="22" y="22" width="120" height="140" fill="#fbf4e2" stroke="#c2a878" stroke-width="2"/>
+        <rect x="26" y="24" width="116" height="134" fill="#fbf4e2" stroke="#c2a878" stroke-width="2"/>
         <!-- inner picture -->
-        <rect x="32" y="32" width="100" height="120" fill="url(#sky)"/>
+        <rect x="34" y="32" width="100" height="118" fill="url(#sky)"/>
         <!-- sun -->
-        <circle cx="62" cy="62" r="13" fill="#c98f3f" opacity="0.85"/>
+        <circle cx="62" cy="60" r="13" fill="#c98f3f" opacity="0.85"/>
         <!-- sea -->
-        <rect x="32" y="112" width="100" height="40" fill="#a07c4c"/>
-        <path d="M32 112 q12 -8 24 0 t24 0 t24 0 t24 0 v6 h-100 z" fill="#84632f"/>
+        <rect x="34" y="110" width="100" height="40" fill="#a07c4c"/>
+        <path d="M34 110 q12 -8 24 0 t24 0 t24 0 t24 0 v8 h-100 z" fill="#84632f"/>
         <!-- palm trunk -->
-        <path d="M96 132 q4 -26 0 -46" stroke="#6b4a28" stroke-width="4" fill="none"/>
+        <path d="M96 130 q4 -26 0 -46" stroke="#6b4a28" stroke-width="4" fill="none"/>
         <!-- palm fronds -->
         <g stroke="#7a6630" stroke-width="4" fill="none" stroke-linecap="round">
-          <path d="M96 86 q-18 -8 -30 -2"/>
-          <path d="M96 86 q18 -8 30 -2"/>
-          <path d="M96 86 q-12 -16 -22 -18"/>
-          <path d="M96 86 q12 -16 22 -18"/>
+          <path d="M96 84 q-18 -8 -30 -2"/>
+          <path d="M96 84 q18 -8 30 -2"/>
+          <path d="M96 84 q-12 -16 -22 -18"/>
+          <path d="M96 84 q12 -16 22 -18"/>
         </g>
-        <text x="82" y="150" font-family="'Special Elite', monospace" font-size="9" fill="#4a3520" text-anchor="middle" letter-spacing="1">POSTES</text>
+        <text x="84" y="148" font-family="'Special Elite', monospace" font-size="9" fill="#4a3520" text-anchor="middle" letter-spacing="1">POSTES</text>
 
-        <!-- perforations: white dots punched along edges -->
+        <!-- perforations: paper-coloured dots punched along edges -->
         ${perforations()}
       </g>
 
-      <!-- POSTMARK overlapping top-right of stamp -->
-      <g transform="translate(132 70)" opacity="0.82">
-        <circle r="46" fill="none" stroke="#5a3d24" stroke-width="2.5"/>
-        <circle r="40" fill="none" stroke="#5a3d24" stroke-width="1.5"/>
-        <path id="ink-top" d="M -40 0 A 40 40 0 0 1 40 0" fill="none"/>
-        <path id="ink-bottom" d="M -34 6 A 34 34 0 0 0 34 6" fill="none"/>
-        <text font-family="'Special Elite', monospace" font-size="10" fill="#5a3d24" letter-spacing="2">
+      <!-- cancellation waves trailing left over the stamp -->
+      <g stroke="${INK}" stroke-width="2" fill="none" opacity="0.65" stroke-linecap="round">
+        <path d="M88 56 q-12 -6 -24 0 t-24 0 t-22 0"/>
+        <path d="M88 64 q-12 -6 -24 0 t-24 0 t-22 0"/>
+        <path d="M88 72 q-12 -6 -24 0 t-24 0 t-22 0"/>
+      </g>
+
+      <!-- circular postmark overlapping the stamp -->
+      <g transform="translate(128 64)" opacity="0.85">
+        <circle r="44" fill="none" stroke="${INK}" stroke-width="2.5"/>
+        <circle r="38" fill="none" stroke="${INK}" stroke-width="1.4"/>
+        <path id="ink-top" d="M -38 0 A 38 38 0 0 1 38 0" fill="none"/>
+        <path id="ink-bottom" d="M -31 5 A 31 31 0 0 0 31 5" fill="none"/>
+        <text font-family="'Special Elite', monospace" font-size="9.5" fill="${INK}" letter-spacing="1.5">
           <textPath href="#ink-top" startOffset="50%" text-anchor="middle">${locUp}</textPath>
         </text>
-        <text font-family="'Special Elite', monospace" font-size="8" fill="#5a3d24" letter-spacing="2">
+        <text font-family="'Special Elite', monospace" font-size="7.5" fill="${INK}" letter-spacing="1.5">
           <textPath href="#ink-bottom" startOffset="50%" text-anchor="middle">BRITISH VIRGIN ISLANDS</textPath>
         </text>
-        <text x="0" y="-2" font-family="'Special Elite', monospace" font-size="11" fill="#5a3d24" text-anchor="middle">${esc(dateStr.split(' ')[0])}</text>
-        <text x="0" y="10" font-family="'Special Elite', monospace" font-size="10" fill="#5a3d24" text-anchor="middle" letter-spacing="1">${esc(dateStr.split(' ')[1])}</text>
-        <text x="0" y="22" font-family="'Special Elite', monospace" font-size="9" fill="#5a3d24" text-anchor="middle">${esc(dateStr.split(' ')[2])}</text>
-
-        <!-- wavy cancellation lines trailing to the right -->
-        <g stroke="#5a3d24" stroke-width="2" fill="none" opacity="0.85">
-          <path d="M40 -14 q12 -6 24 0 t24 0 t24 0"/>
-          <path d="M40 -6 q12 -6 24 0 t24 0 t24 0"/>
-          <path d="M40 2 q12 -6 24 0 t24 0 t24 0"/>
-          <path d="M40 10 q12 -6 24 0 t24 0 t24 0"/>
-        </g>
+        <text x="0" y="-3" font-family="'Special Elite', monospace" font-size="11" fill="${INK}" text-anchor="middle">${esc(parts[0])}</text>
+        <text x="0" y="9" font-family="'Special Elite', monospace" font-size="10" fill="${INK}" text-anchor="middle" letter-spacing="1">${esc(parts[1])}</text>
+        <text x="0" y="20" font-family="'Special Elite', monospace" font-size="9" fill="${INK}" text-anchor="middle">${esc(parts[2])}</text>
       </g>
     </svg>`;
   }
 
-  // perforation dots punched around the stamp rectangle (x22..142, y22..162)
+  // perforation dots punched around the stamp rectangle (x26..142, y24..158)
   function perforations() {
     let dots = '';
     const r = 4;
-    const x0 = 22, x1 = 142, y0 = 22, y1 = 162;
+    const x0 = 26, x1 = 142, y0 = 24, y1 = 158;
     for (let x = x0; x <= x1; x += 10) {
-      dots += `<circle cx="${x}" cy="${y0}" r="${r}" fill="#f1e6c9"/>`;
-      dots += `<circle cx="${x}" cy="${y1}" r="${r}" fill="#f1e6c9"/>`;
+      dots += `<circle cx="${x}" cy="${y0}" r="${r}" fill="#ece0c0"/>`;
+      dots += `<circle cx="${x}" cy="${y1}" r="${r}" fill="#ece0c0"/>`;
     }
     for (let y = y0; y <= y1; y += 10) {
-      dots += `<circle cx="${x0}" cy="${y}" r="${r}" fill="#f1e6c9"/>`;
-      dots += `<circle cx="${x1}" cy="${y}" r="${r}" fill="#f1e6c9"/>`;
+      dots += `<circle cx="${x0}" cy="${y}" r="${r}" fill="#ece0c0"/>`;
+      dots += `<circle cx="${x1}" cy="${y}" r="${r}" fill="#ece0c0"/>`;
     }
     return dots;
   }
@@ -811,8 +926,16 @@
   });
 
   // ---- Init ----
+  // paint the preset thumbnails with their actual scenes
+  sceneSwatches.forEach((sw) => { sw.innerHTML = sceneSVG(sw.dataset.scene); });
   applyBackdrop();
   render();
+
+  // keep the greeting fitted as the layout changes
+  window.addEventListener('resize', fitGreeting);
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(fitGreeting);
+  }
 })();
 </script>
 </body>
